@@ -88,18 +88,18 @@ class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
   }
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: itemBonusList.length>0 ? 3 : 2,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Чек № $number'),
-          bottom: TabBar(tabs: _tabs),
+          bottom: TabBar(tabs: itemBonusList.length>0 ? _tabs3 : _tabs2),
           centerTitle: true,
-          //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
         body: TabBarView(children: <Widget> [
           _PageTitle(number: number, dt: dt, summaMax: summaMax, summa: summa, summaSale: summaSale, comment: comment, shopId: shopId, shopName: shopName, shopAddress: shopAddress, bonusDec: bonusDec, bonusAdd: bonusAdd, bonus: bonus),
           _PageItemTovar(itemList: itemTovarList,),
-          _PageItemBonus(itemList: itemBonusList,),
+          if (itemBonusList.length>0)
+            _PageItemBonus(itemList: itemBonusList,),
         ]
         ),
       ),
@@ -108,10 +108,15 @@ class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
 }
 
 
-const _tabs = [
+const _tabs3 = [
   Tab(icon: Icon(Icons.home_rounded), text: "Основное"),
   Tab(icon: Icon(Icons.shopping_bag_rounded), text: "Состав"),
   Tab(icon: Icon(Icons.percent), text: "Промо-бонусы"),
+];
+
+const _tabs2 = [
+  Tab(icon: Icon(Icons.home_rounded), text: "Основное"),
+  Tab(icon: Icon(Icons.shopping_bag_rounded), text: "Состав"),
 ];
 
 class _PageTitle extends StatelessWidget {

@@ -49,10 +49,32 @@ class ItemBonusList {
   ItemBonusList(this.actionName, this.actionComment, this.bonus, this.dtBegin, this.dtEnd);
 
   ItemBonusList.fromJson(Map<String, dynamic> json) {
-    actionName = json['actionName'] ?? 'Articul';
-    actionComment = json['subName'] ?? '';
+    actionName = json['actionName'] ?? 'actionName';
+    actionComment = json['actionComment'] ?? 'actionComment';
     bonus = json['bonus'] ?? 0;
-    dtBegin = json['dtBegin'] ?? 0;
-    dtEnd = json['dtEnd'] ?? 0;
+    dtBegin = DateTime.tryParse(json['dtBegin']) ?? DateTime(2023);
+    dtEnd = DateTime.tryParse(json['dtEnd']) ?? DateTime(2023);
+  }
+}
+
+class ShopsList {
+  late int id;
+  late String name;
+  late String address;
+  late int level;
+  late String name_tc;
+  late int brand_id;
+  late String brand_name;
+
+  ShopsList(this.id, this.name, this.address, this.level, this.name_tc, this.brand_id, this.brand_name);
+
+  ShopsList.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    name = json['name'] ?? 'name';
+    address = json['address'] ?? 'address';
+    level = json['level'] ?? 0;
+    name_tc = json['name_tc'] ?? 'name_tc';
+    brand_id = json['brand_id'] ?? 0;
+    brand_name = json['brand_name'] ?? 'brand_name';
   }
 }
