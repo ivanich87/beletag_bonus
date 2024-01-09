@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:beletag/components/CarsView.dart';
+import 'package:beletag/screens/PurchaseList.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ class scrHomeScreen extends StatefulWidget {
 }
 
 class _scrHomeScreenState extends State<scrHomeScreen> {
+
   bool success = false;
   String message = '';
   String cardNumber = '';
@@ -123,8 +125,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                   leading: Icon(Icons.currency_ruble_rounded),
                   //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
                   onTap: () async {
-                    //final result =
-                    //    await Navigator.pushNamed(context, '/cashHome', arguments: {'summa': 100});
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(cardNumber)));
                   },
                 ),
               ),
