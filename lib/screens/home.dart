@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:beletag/components/CarsView.dart';
 import 'package:beletag/screens/PurchaseList.dart';
 import 'package:beletag/screens/ShopsList.dart';
+import 'package:beletag/screens/about.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:intl/intl.dart';
@@ -160,8 +162,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                   leading: Icon(Icons.info_outlined),
                   //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
                   onTap: () async {
-                    //final result =
-                    //    await Navigator.pushNamed(context, '/cashHome', arguments: {'summa': 100});
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrAboutScreen()));
                   },
                 ),
               )

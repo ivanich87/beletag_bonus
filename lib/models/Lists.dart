@@ -78,3 +78,18 @@ class ShopsList {
     brand_name = json['brand_name'] ?? 'brand_name';
   }
 }
+
+
+class AboutList {
+  late int id;
+  late String name;
+  late String txt;
+
+  AboutList(this.id, this.name, this.txt);
+
+  AboutList.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    name = json['name'] ?? 'name';
+    txt = json['txt'] ?? 'txt';
+  }
+}

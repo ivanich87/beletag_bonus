@@ -157,9 +157,9 @@ class _CardShopsListState extends State<CardShopsList> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
           child: ListTile(
-              title: Text(widget.event.name + ' (' + widget.event.brand_name + ')', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+              title: Text(widget.event.name + '', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
               subtitle: Text(widget.event.address),
-              //trailing: Text(widget.event.brand_name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.green)),
+              trailing: Image.asset(BrandIconPath(widget.event.brand_id), color: Colors.black, width: 70),
               onTap: () async {
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(widget.event.id)));
               },
@@ -168,4 +168,49 @@ class _CardShopsListState extends State<CardShopsList> {
     );
   }
 }
+
+String BrandIconPath(int id) {
+  if (id==1)
+    return 'assets/images/beleta.png';
+  if (id==2)
+    return 'assets/images/beletag.png';
+
+  //if (id==5)
+    return 'assets/images/cleverwear.png';
+
+}
 //--\\Список магазинов----------------------------------------------------------
+
+
+//--//Список преимуществ--------------------------------------------------------
+class CardAboutList extends StatefulWidget {
+  const CardAboutList({
+    super.key,
+    required this.event
+  });
+
+  final AboutList event;
+
+  @override
+  State<CardAboutList> createState() => _CardAboutListState();
+}
+
+class _CardAboutListState extends State<CardAboutList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 15,),
+        Text(widget.event.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.amber),),
+        Text(widget.event.txt, style: TextStyle(fontSize: 18),),
+      ],
+    );
+  }
+}
+//--\\Список преимуществ--------------------------------------------------------
