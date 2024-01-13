@@ -19,6 +19,7 @@ class _scrAboutScreenState extends State<scrAboutScreen> {
   List <AboutList> objectList = [];
   bool success = false;
   String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
+  String header = '';
   var resp;
   var items = [];
 
@@ -36,6 +37,7 @@ class _scrAboutScreenState extends State<scrAboutScreen> {
         if (success=true) {
           resp = notesJson['response'] ?? '';
           logoPath = resp['logo'];
+          header = resp['header'];
           items = resp['items'];
           for (var noteJson in items) {
             objectList.add(AboutList.fromJson(noteJson));
@@ -65,6 +67,8 @@ class _scrAboutScreenState extends State<scrAboutScreen> {
       body: Column(
         children: [
           Image(image: NetworkImage(logoPath)),
+          if (header.length>0)
+            Text(header,textAlign: TextAlign.center , style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),),
           Expanded(child:
             ListView.builder(
               padding: EdgeInsets.all(10),

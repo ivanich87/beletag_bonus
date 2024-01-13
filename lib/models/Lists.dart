@@ -65,8 +65,11 @@ class ShopsList {
   late String name_tc;
   late int brand_id;
   late String brand_name;
+  late String brand_logo;
+  late int region_id;
+  late String region_name;
 
-  ShopsList(this.id, this.name, this.address, this.level, this.name_tc, this.brand_id, this.brand_name);
+  ShopsList(this.id, this.name, this.address, this.level, this.name_tc, this.brand_id, this.brand_name, this.brand_logo, this.region_id, this.region_name);
 
   ShopsList.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? 0;
@@ -76,6 +79,9 @@ class ShopsList {
     name_tc = json['name_tc'] ?? 'name_tc';
     brand_id = json['brand_id'] ?? 0;
     brand_name = json['brand_name'] ?? 'brand_name';
+    brand_logo = json['brand_logo'] ?? '';
+    region_id = json['region_id'] ?? 0;
+    region_name = json['region_name'] ?? 'region_name';
   }
 }
 

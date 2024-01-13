@@ -3,6 +3,7 @@ import 'package:beletag/components/CarsView.dart';
 import 'package:beletag/screens/PurchaseList.dart';
 import 'package:beletag/screens/ShopsList.dart';
 import 'package:beletag/screens/about.dart';
+import 'package:beletag/screens/PersonView.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -139,8 +140,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                   leading: Icon(Icons.account_circle),
                   //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
                   onTap: () async {
-                    //final result =
-                    //    await Navigator.pushNamed(context, '/cashHome', arguments: {'summa': 100});
+                    //_tripEditModalBottomSheet(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('89229220315')));
                   },
                 ),
               ),
@@ -175,5 +176,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         // )
         //backgroundColor: Colors.grey[900]),
         );
+  }
+
+  void _tripEditModalBottomSheet(BuildContext context) {
+    showModalBottomSheet(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
+      return Container(
+        height: 200,
+        child: Text('Edit data'),
+      );
+      
+    });
   }
 }

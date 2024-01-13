@@ -1,9 +1,9 @@
 import 'package:beletag/models/Lists.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:beletag/screens/ShopsView.dart'; 
+import 'package:beletag/screens/PurchaseView.dart';
 
-import '../screens/PurchaseView.dart';
 
 
 //--//Список чеков--------------------------------------------------------------
@@ -159,9 +159,10 @@ class _CardShopsListState extends State<CardShopsList> {
           child: ListTile(
               title: Text(widget.event.name + '', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
               subtitle: Text(widget.event.address),
-              trailing: Image.asset(BrandIconPath(widget.event.brand_id), color: Colors.black, width: 70),
+              //trailing: Image.asset(BrandIconPath(widget.event.brand_id), color: Colors.black, width: 70),
+              trailing: widget.event.brand_logo.length==0 ? Text('') : Image.network(widget.event.brand_logo, width: 70),
               onTap: () async {
-                //Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(widget.event.id)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => scrShopsViewScreen(widget.event.id.toString())));
               },
               onLongPress: () {}),
         )
