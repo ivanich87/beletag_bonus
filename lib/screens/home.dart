@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 //import 'package:intl/intl.dart';
 
 class scrHomeScreen extends StatefulWidget {
-  scrHomeScreen();
+  final String id;
+  scrHomeScreen(this.id);
 
   @override
   State<scrHomeScreen> createState() => _scrHomeScreenState();
@@ -40,7 +41,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
   var resp;
 
   Future httpGetUserData() async {
-    var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/89229220315/', host: 's4.rntx.ru', scheme: 'https');
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -109,6 +110,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     super.initState();
   }
   Widget build(BuildContext context) {
+    print('cardNumber: $cardNumber, name: $name, secondName: $secondName, bonusTotal: $bonusTotal, bonusPromo: $bonusPromo, barcode: $barcode');
     return Scaffold(
         appBar: AppBar(
           title: Text('CleverWear'),
@@ -178,13 +180,4 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         );
   }
 
-  void _tripEditModalBottomSheet(BuildContext context) {
-    showModalBottomSheet(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
-      return Container(
-        height: 200,
-        child: Text('Edit data'),
-      );
-      
-    });
-  }
 }

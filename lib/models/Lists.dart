@@ -1,3 +1,25 @@
+class UserInfo {
+  String login;
+  String password;
+
+  //Event({required this.name, required this.location, required this.dt});
+
+  UserInfo({
+    required this.login,
+    required this.password,
+  });
+
+  UserInfo.fromJson(Map<String, dynamic> json)
+      : login = json['login'],
+        password = json['password'];
+
+  Map<String, dynamic> toJson() => {
+    'login': login,
+    'password': password,
+  };
+}
+
+
 class PurchaseList {
   late String id;
   late String number;

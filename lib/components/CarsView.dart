@@ -93,7 +93,9 @@ class CreditCardsPage extends StatelessWidget {
             ),
             bonusPromoWidget(bonusPromo),
             Center(
-              child: Container(height: 60, width: 200, child: SfBarcodeGenerator(value: barcode, symbology: EAN13(), showValue: true,)),
+              child: (barcode.length<13)
+              ? Container(height: 60, width: 250, child: Text(''))
+              : Container(height: 60, width: 250, child: SfBarcodeGenerator(value: barcode, symbology: EAN13(), showValue: true,)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
