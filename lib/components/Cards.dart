@@ -215,3 +215,42 @@ class _CardAboutListState extends State<CardAboutList> {
   }
 }
 //--\\Список преимуществ--------------------------------------------------------
+
+//--//Бонусы--------------------------------------------------------------------
+class CardTransactionList extends StatefulWidget {
+  const CardTransactionList({
+    super.key,
+    required this.event
+  });
+
+  final TransactionList event;
+
+  @override
+  State<CardTransactionList> createState() => _CardTransactionListState();
+}
+
+class _CardTransactionListState extends State<CardTransactionList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        margin: EdgeInsets.symmetric(vertical: 6.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
+          child: ListTile(
+              //leading: Text('${DateFormat('dd.MM.yyyy').format(widget.event.dt)}',
+              title: Text('${widget.event.tip}', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+              subtitle: Text(widget.event.comment),
+              trailing: Text('${widget.event.bonus_add} руб', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.green))
+          ),
+        )
+    );
+  }
+}
+//--\\Бонусы--------------------------------------------------------------------

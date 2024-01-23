@@ -18,8 +18,10 @@ class _scrLoadingScreenState extends State<scrLoadingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image(image: NetworkImage(logoPath)),
-          Text('Загрузка данных'),
+          //Image(image: NetworkImage(logoPath),width: 250),
+          Image.asset('assets/images/beletag.png', width: 250, color: Colors.amber),
+
+          //Text('Загрузка данных'),
         ],
       ),
     );

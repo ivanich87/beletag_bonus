@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^2.2.1
   intl: ^0.18.1
   url_launcher: ^6.2.1
+  phone_form_field: ^8.1.1
+  flutter_riverpod: ^2.4.9
   http:
 
 dev_dependencies:

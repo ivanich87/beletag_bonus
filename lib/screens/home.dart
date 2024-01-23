@@ -4,7 +4,10 @@ import 'package:beletag/screens/PurchaseList.dart';
 import 'package:beletag/screens/ShopsList.dart';
 import 'package:beletag/screens/about.dart';
 import 'package:beletag/screens/PersonView.dart';
+import 'package:beletag/screens/logon.dart';
+import 'package:beletag/screens/Settings.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:intl/intl.dart';
@@ -77,7 +80,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
   }
 
   Future httpGetUserBonusBalance() async {
-    var _url=Uri(path: '/c/beletag_bonus/hs/v1/balanceall/89229220315/', host: 's4.rntx.ru', scheme: 'https');
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/balanceall/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -101,9 +104,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
 
   @override
   void initState() {
-    httpGetUserBonusBalance();
     httpGetUserData().then((value) {
-      setState(() {
+      httpGetUserBonusBalance().then((value) {
+        setState(() {
+        });
       });
     });
     // TODO: implement initState
@@ -113,64 +117,74 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     print('cardNumber: $cardNumber, name: $name, secondName: $secondName, bonusTotal: $bonusTotal, bonusPromo: $bonusPromo, barcode: $barcode');
     return Scaffold(
         appBar: AppBar(
+          //backgroundColor: Colors.transparent,
           title: Text('CleverWear'),
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: CircleAvatar(child: _ProfileIcon(), backgroundColor: Colors.black,)
+            )
+          ],
           centerTitle: true,
           //backgroundColor: Colors.grey[900],
           //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          //actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode),
-              Card(
-                child: ListTile(
-                  title: Text('История покупок', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                  subtitle: Text('Чеки, возвраты, начисления бонусов'),
-                  leading: Icon(Icons.currency_ruble_rounded),
-                  //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                  onTap: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(cardNumber)));
-                  },
+        body: ListView(
+          children: [Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
+                    CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode),
+                    Card(
+                        child: ListTile(
+                            title: Text('История покупок', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
+                            subtitle: Text('Чеки, возвраты, начисления бонусов'),
+                            leading: Icon(Icons.currency_ruble_rounded),
+                          //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
+                          onTap: () async {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(cardNumber)));
+                    },
+                  ),
                 ),
-              ),
-              Card(
-                child: ListTile(
-                  title: Text('Мои данные', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                  subtitle: Text('Персональные данные'),
-                  leading: Icon(Icons.account_circle),
-                  //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                  onTap: () async {
-                    //_tripEditModalBottomSheet(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('89229220315')));
-                  },
+                Card(
+                  child: ListTile(
+                    title: Text('Мои данные', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
+                    subtitle: Text('Персональные данные'),
+                    leading: Icon(Icons.account_circle),
+                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
+                    onTap: () async {
+                      //_tripEditModalBottomSheet(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('${widget.id}')));
+                    },
+                  ),
                 ),
-              ),
-              Card(
-                child: ListTile(
-                  title: Text('Магазины', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                  subtitle: Text('Адреса магазинов'),
-                  leading: Icon(Icons.maps_home_work_sharp),
-                  //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                  onTap: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrShopsListScreen()));
-                  },
+                Card(
+                  child: ListTile(
+                    title: Text('Магазины', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
+                    subtitle: Text('Адреса магазинов'),
+                    leading: Icon(Icons.maps_home_work_sharp),
+                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
+                    onTap: () async {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrShopsListScreen()));
+                    },
+                  ),
                 ),
-              ),
-              Card(
-                child: ListTile(
-                  title: Text('О нас', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                  subtitle: Text('Информация'),
-                  leading: Icon(Icons.info_outlined),
-                  //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                  onTap: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrAboutScreen()));
-                  },
-                ),
-              )
-            ],
+                Card(
+                  child: ListTile(
+                    title: Text('О нас', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
+                    subtitle: Text('Информация'),
+                    leading: Icon(Icons.info_outlined),
+                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
+                    onTap: () async {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAboutScreen()));
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
+    ]
         ),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {},
@@ -180,4 +194,45 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         );
   }
 
+}
+
+
+enum Menu { itemInfo, itemSettings, itemOut }
+
+class _ProfileIcon extends StatelessWidget {
+  const _ProfileIcon({Key? key}) : super(key: key);
+
+  static const userInfoKey = 'userInfoKey';
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.person, ),
+        iconColor: Colors.grey,
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemOut) {
+            var prefs = await SharedPreferences.getInstance();
+            prefs.remove(userInfoKey);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrLogonScreen()), (route) => false,);
+          }
+          if (item == Menu.itemSettings) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemInfo,
+            child: Text('О приложении'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemSettings,
+            child: Text('Настройки'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemOut,
+            child: Text('Выход из учетной записи'),
+          ),
+        ]);
+  }
 }

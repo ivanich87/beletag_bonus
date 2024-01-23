@@ -7,10 +7,51 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
+
+class ThemeNotifier extends ChangeNotifier {
+  // Define your default thememode here
+  ThemeMode themeMode = ThemeMode.light;
+
+  ThemeNotifier() {
+    _init();
+  }
+
+  _init() async {
+    int themeIndex = 0;
+
+    var prefs = await SharedPreferences.getInstance();
+    final String? Inf = prefs.getString('userInfoKey');
+    if (Inf == null) {
+      themeIndex = 0;
+    } else {
+      var str = json.decode(Inf);
+      UserInfo dt = UserInfo.fromJson(str);
+      themeIndex = dt.themeIndex;
+    }
+
+    // prefs = await SharedPreferences.getInstance();
+    //
+    // int _theme = prefs?.getInt("theme") ?? themeMode.index;
+    themeMode = ThemeMode.values[themeIndex];
+    print('Запустили смену темы $themeIndex $themeMode');
+    notifyListeners();
+  }
+
+  setTheme(ThemeMode mode) {
+    themeMode = mode;
+    notifyListeners();
+    // Save the selected theme using shared preferences
+    //prefs?.setInt("theme", mode.index);
+  }
+}
+
+final themeNotifierProvider = ChangeNotifierProvider<ThemeNotifier>((_) => ThemeNotifier());
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -30,28 +71,39 @@ class _MyAppState extends State<MyApp> {
   String message = '';
   bool logIn = false;
 
+  int themeIndex = 0;
+
 
   Future httpGetUserData() async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.remove(userInfoKey);
     final String? Inf = prefs.getString(userInfoKey);
-    //if (Inf == null) return null;
     if (Inf == null) {
       _login = '';
       _password = '';
       _load = true;
+      themeIndex = 0;
       print('не нашли данных по ключу $userInfoKey');
     } else {
       var str = json.decode(Inf);
       UserInfo dt = UserInfo.fromJson(str);
       _login = dt.login;
       _password = dt.password;
+      themeIndex = dt.themeIndex;
       print('Нашли данные по ключу $userInfoKey Логин: $_login Пароль: $_password');
     }
 
     print('logon......');
     print('Логин: $_login');
     print('Пароль: $_password');
+    print('Тема: $themeIndex');
+
+    if (themeIndex==null)
+      themeIndex = 0;
+
+    Globals.setThemeIndex(themeIndex);
+    Globals.setLogin(_login);
+    Globals.setPasswodr(_password);
+
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/logon/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
@@ -87,32 +139,20 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
   }
+  @override
   Widget build(BuildContext context) {
-    print('LogIn $logIn');
-    //httpGetUserData();
-    //print('LogIn $logIn');
+    ChangeNotifierProvider((ref) {
+      final _themeNotifier = ref.watch(themeNotifierProvider);
+    });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // darkTheme: ThemeData(
-      //   colorSchemeSeed: Colors.black12,
-      //   brightness: Brightness.dark,
-      //   useMaterial3: true
-      // ),
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
-      //   useMaterial3: true,
-      // ),
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.dark,
+
+      theme: ThemeData.light().copyWith(cardColor: Colors.black12),
+      darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[400]), //grey[850]
+      themeMode: ThemeMode.values[themeIndex],
       title: 'Бельетаж>',
-        //initialRoute: (logIn == true) ? '/' : '/logon',
-        //routes: {
-        //  '/': (context, {arguments}) => scrHomeScreen(),
-        //  '/logon': (context, {arguments}) => scrLogonScreen(),
-        //}
+
       home: (logIn == true) ? scrHomeScreen(_login) : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
-      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:phone_form_field/phone_form_field.dart';
 
 
 class scrPersonViewScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class scrPersonViewScreen extends StatefulWidget {
 }
 
 class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
+  bool userDataEdit = false;
   bool success = false;
   var resp;
   String name = '';
@@ -64,6 +66,45 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     }
   }
 
+  Future httpPutUserChange() async {
+    bool result = false;
+    bool success = false;
+    String message = '';
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
+    //var _url=Uri(path: '/BonusSystem/hs/v1/user/${widget.id}/', host: 'ut.acewear.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+    };
+    try {
+      var _body = <String, String> {
+        "name": name,
+        "last_name": last_name,
+        "second_name": second_name,
+        "phone": phone,
+        "email": email,
+        "gender": gender,
+        "birthday": birthday.toString(),
+        "notify_email": notify_email.toString(),
+        "notify_sms": notify_sms.toString(),
+        "notify_push": notify_push.toString()
+      };
+      print(_body);
+      var response = await http.put(_url, headers: _headers, body: json.encode(_body));
+      if (response.statusCode == 200) {
+        var notesJson = json.decode(response.body);
+        success = notesJson['success'] ?? false;
+        message = notesJson['message'] ?? '';
+        result = notesJson['response'] ?? false;
+        print('Данные сохранены $result ($message)');
+      }
+      else
+        print(response.body);
+    } catch (error) {
+      print("Ошибка при сохранении данных: $error");
+    }
+  }
+
   @override
   void initState() {
     httpGetObject().then((value) {
@@ -73,62 +114,77 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     // TODO: implement initState
     super.initState();
   }
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Персональные данные'),
-        centerTitle: true,
-        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
-        child: ListView(
-            children: [
-              _CustomHeader(title: 'ФИО'),
-              ListTile(leading: Icon(Icons.manage_accounts_rounded), title: _CustomText(title: '$last_name $name $second_name'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(1)),)),
-              Divider(color: Colors.white, thickness: 2, ),
-              //SizedBox(height: 10,),
-              _CustomHeader(title: 'Телефон'),
-              ListTile(leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(2)),)),
-              Divider(color: Colors.white, thickness: 2),
-              //SizedBox(height: 10,),
-              _CustomHeader(title: 'E-mail'),
-              ListTile(leading: (confirmed_email ? Icon(Icons.mark_email_read, color: Colors.green) : Icon(Icons.mark_email_unread_rounded, color: Colors.red)), title: _CustomText(title: '$email'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(3)),)),
-              Divider(color: Colors.white, thickness: 2),
-              //SizedBox(height: 10,),
-              _CustomHeader(title: 'День рождения'),
-              ListTile(leading: Icon(Icons.calendar_month), title: _CustomText(title: DateFormat('dd.MM.yyyy').format(birthday).toString()), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async { //_tripEditModalBottomSheet(context, _tripEditWidgets(4))
-                DateTime? pickeddate = await showDatePicker(context: context, initialDate: birthday, firstDate: DateTime(1940), lastDate: DateTime(2015));
-                if (pickeddate != null) {
-                  setState(() {
-                    birthday = pickeddate;
-                  });
-                }
-              },)),
-              Divider(color: Colors.white, thickness: 2),
-              //SizedBox(height: 10,),
-              _CustomHeader(title: 'Пол'),
-              ListTile(leading: (gender=='F') ? Icon(Icons.female, color: Colors.pinkAccent,) : Icon(Icons.male, color: Colors.lightBlue), title: _CustomText(title: (gender=='F') ? 'Женский' : 'Мужской'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(5)),)),
-              Divider(color: Colors.white, thickness: 2),
-              //SizedBox(height: 10,),
-              _CustomHeader(title: 'Разрешить рассылку'),
-              ListTile(enabled: confirmed_email, leading: Icon(Icons.email_outlined), title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: notify_email, onChanged: (value) {
-                setState(() {
-                  if (confirmed_email)
-                    notify_email = value;
-                });
-              },)),
-              ListTile(leading: Icon(Icons.sms), title: Text('SMS рассылка'), trailing: CupertinoSwitch(value: notify_sms, onChanged: (value) {
-                setState(() {
-                  notify_sms = value;
-                });
-              },)),
-              ListTile(enabled: false, leading: Icon(Icons.message), title: Text('Push в приложении'), trailing: CupertinoSwitch( value: notify_push, onChanged: (value) {
 
-              },)),
-              Divider(color: Colors.white, thickness: 2),
-              //SizedBox(height: 10,),
-            ],
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (bool didPop) async {
+        if (userDataEdit==true) {
+          print('Выход с сохранением');
+          httpPutUserChange();
+        }
+        return;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Персональные данные'),
+          centerTitle: true,
+          //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20),
+          child: ListView(
+              children: [
+                _CustomHeader(title: 'ФИО'),
+                ListTile(leading: Icon(Icons.manage_accounts_rounded), title: _CustomText(title: '$last_name $name $second_name'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(1)),)),
+                Divider(color: Colors.white, thickness: 2, ),
+                //SizedBox(height: 10,),
+                _CustomHeader(title: 'Телефон'),
+                ListTile(leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(2)),)),
+                Divider(color: Colors.white, thickness: 2),
+                //SizedBox(height: 10,),
+                _CustomHeader(title: 'E-mail'),
+                ListTile(leading: (confirmed_email ? Icon(Icons.mark_email_read, color: Colors.green) : Icon(Icons.mark_email_unread_rounded, color: Colors.red)), title: _CustomText(title: '$email'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(3)),)),
+                Divider(color: Colors.white, thickness: 2),
+                //SizedBox(height: 10,),
+                _CustomHeader(title: 'День рождения'),
+                ListTile(leading: Icon(Icons.calendar_month), title: _CustomText(title: DateFormat('dd.MM.yyyy').format(birthday).toString()), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async { //_tripEditModalBottomSheet(context, _tripEditWidgets(4))
+                  DateTime? pickeddate = await showDatePicker(context: context, initialDate: birthday, firstDate: DateTime(1940), lastDate: DateTime(2015));
+                  if (pickeddate != null) {
+                    setState(() {
+                      birthday = pickeddate;
+                      userDataEdit = true;
+                    });
+                  }
+                },)),
+                Divider(color: Colors.white, thickness: 2),
+                //SizedBox(height: 10,),
+                _CustomHeader(title: 'Пол'),
+                ListTile(leading: (gender=='F') ? Icon(Icons.female, color: Colors.pinkAccent,) : Icon(Icons.male, color: Colors.lightBlue), title: _CustomText(title: (gender=='F') ? 'Женский' : 'Мужской'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(5)),)),
+                Divider(color: Colors.white, thickness: 2),
+                //SizedBox(height: 10,),
+                _CustomHeader(title: 'Разрешить рассылку'),
+                ListTile(enabled: confirmed_email, leading: Icon(Icons.email_outlined), title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: notify_email, onChanged: (value) {
+                  setState(() {
+                    if (confirmed_email)
+                      notify_email = value;
+                    userDataEdit = true;
+                  });
+                },)),
+                ListTile(leading: Icon(Icons.sms), title: Text('SMS рассылка'), trailing: CupertinoSwitch(value: notify_sms, onChanged: (value) {
+                  setState(() {
+                    notify_sms = value;
+                    userDataEdit=true;
+                  });
+                },)),
+                ListTile(enabled: false, leading: Icon(Icons.message), title: Text('Push в приложении'), trailing: CupertinoSwitch( value: notify_push, onChanged: (value) {
+
+                  userDataEdit = true;
+                },)),
+                Divider(color: Colors.white, thickness: 2),
+                //SizedBox(height: 10,),
+              ],
+          ),
         ),
       ),
     );
@@ -154,6 +210,8 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     TextEditingController _second_nameController = TextEditingController(text: second_name);
 
     TextEditingController _phoneController = TextEditingController(text: phone);
+    //PhoneController _phoneController = PhoneController(phone as PhoneNumber);
+    
 
     TextEditingController _emailController = TextEditingController(text: email);
 
@@ -175,16 +233,19 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
         last_name = _last_nameController.text;
         name = _nameController.text;
         second_name = _second_nameController.text;
+
+        userDataEdit = true;
       });
       Navigator.pop(context);
     }
 
     void _SaveDataPhone() {
       setState(() {
-        if (_phoneController.text.length<2)
-          print('Почта не заполнена');
-
-        phone = _phoneController.text;
+        // if (_phoneController.text.length<2)
+        //   print('Почта не заполнена');
+        //
+        // phone = _phoneController.text;
+        // userDataEdit = true;
       });
       Navigator.pop(context);
     }
@@ -195,13 +256,14 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           print('Почта не заполнена');
 
         email = _emailController.text;
+        userDataEdit = true;
       });
       Navigator.pop(context);
     }
 
     void _SaveDataBirday() {
       setState(() {
-
+        userDataEdit = true;
       });
       Navigator.pop(context);
     }
@@ -241,11 +303,14 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
         children: [
           TextFormField(
             controller: _phoneController,
+            //defaultCountry: IsoCode.RU,
+            //validator: PhoneValidator.validMobile(),
+            autofocus: true,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)), labelText: 'Телефон'),
           ),
           SizedBox(height: 20),
-          Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataPhone, child: Text('Сохранить'), style: _style, )),
+          Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataPhone, child: Text('!Сохранить'), style: _style, )),
         ],
       );
     };
@@ -266,7 +331,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
         children: [
           TextFormField(
             initialValue: birthday.toString(),
-            decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)), labelText: 'E-Mail'),
+            decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)), labelText: 'Birthday'),
           ),
           SizedBox(height: 20),
           Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataBirday, child: Text('Сохранить'), style: _style, )),
@@ -281,6 +346,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           RadioListTile(secondary: Icon(Icons.female, color: Colors.pinkAccent,), title: Text('Женский'), value: 'F', groupValue: gender, onChanged: (value){
             setState(() {
               gender = value!;
+              userDataEdit = true;
               Navigator.pop(context);
             });
           }
@@ -288,6 +354,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           RadioListTile(secondary: Icon(Icons.male, color: Colors.lightBlue,), title: Text('Мужской'), value: 'M', groupValue: gender, onChanged: (value) {
             setState(() {
               gender = value!;
+              userDataEdit = true;
               Navigator.pop(context);
             });
           }),

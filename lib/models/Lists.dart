@@ -1,21 +1,25 @@
 class UserInfo {
   String login;
   String password;
+  int themeIndex;
 
   //Event({required this.name, required this.location, required this.dt});
 
   UserInfo({
     required this.login,
     required this.password,
+    required this.themeIndex,
   });
 
   UserInfo.fromJson(Map<String, dynamic> json)
       : login = json['login'],
-        password = json['password'];
+        password = json['password'],
+        themeIndex = json['themeIndex'];
 
   Map<String, dynamic> toJson() => {
     'login': login,
     'password': password,
+    'themeIndex': themeIndex,
   };
 }
 
@@ -120,4 +124,47 @@ class AboutList {
     name = json['name'] ?? 'name';
     txt = json['txt'] ?? 'txt';
   }
+}
+
+
+class TransactionList {
+  late DateTime dt;
+  late String comment;
+  late String tip;
+  late num bonus_add;
+  late num bonus_dec;
+
+  TransactionList(this.dt, this.comment, this.tip, this.bonus_add, this.bonus_dec);
+
+  TransactionList.fromJson(Map<String, dynamic> json) {
+    dt = DateTime.tryParse(json['Date']) ?? DateTime(2023);
+    comment = json['Comment'] ?? '0';
+    tip = json['Tip'] ?? 'Прочее';
+    bonus_add = json['bonus_add'] ?? 0;
+    bonus_dec = json['bonus_dec'] ?? 0;
+  }
+}
+
+
+class Globals {
+  static var anThemeIndex = 0;
+  static var anLogin = '';
+  static var anPassword = '';
+
+  static printInteger() {
+    print(anThemeIndex);
+  }
+
+  static setThemeIndex(int a) {
+    anThemeIndex = a;
+  }
+
+  static setLogin(String a) {
+    anLogin = a;
+  }
+
+  static setPasswodr(String a) {
+    anPassword = a;
+  }
+
 }

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:phone_form_field/phone_form_field.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:beletag/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,9 +56,9 @@ class _Logo extends StatelessWidget {
         //FlutterLogo(size: isSmallScreen ? 100 : 200),
         Image(image: NetworkImage(logoPath)),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           child: Text(
-            "Введите номер телефона",
+            "Авторизация по номеру телефона",
             textAlign: TextAlign.center,
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headline6
@@ -64,7 +67,7 @@ class _Logo extends StatelessWidget {
                 .headline5
                 ?.copyWith(color: Colors.black),
           ),
-        )
+        ),
       ],
     );
   }
@@ -78,23 +81,61 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
-  //TextEditingController _loginController = TextEditingController(text: '');
-  //TextEditingController _passwordController = TextEditingController(text: '');
   static const userInfoKey = 'userInfoKey';
   String login = '';
   String password = '';
 
   bool _isPasswordVisible = false;
-  String _smskod = '111';
+  String _smskod = '1111';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future _setUserInfo() async {
+    int themeIndex = Globals.anThemeIndex;
+
+    //сохраняем в глобальные переменные логин и пароль
+    Globals.setLogin(login);
+    Globals.setPasswodr(password);
+
+    //сохраняем в локальную БД параметры
     var prefs = await SharedPreferences.getInstance();
-    final _userInfo = UserInfo(login: login, password: password);
+    final _userInfo = UserInfo(login: login, password: password, themeIndex: themeIndex);
     prefs.setString(userInfoKey, json.encode(_userInfo));
 
     print('Сохранили в ключ $userInfoKey строку: ${json.encode(_userInfo)}');
+  }
+
+  Future httpGetPhoneValidate() async {
+    print('Запустилась процедура отправки смс на $login');
+    var resp;
+    bool success = false;
+    bool result = false;
+    String message = '';
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/phonevalidate/${login}/', host: 's4.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      if (response.statusCode == 200) {
+        var notesJson = json.decode(response.body);
+        success = notesJson['success'] ?? false;
+        message = notesJson['message'] ?? '';
+        if (success==true) {
+          resp = notesJson['response'] ?? '';
+          result = resp['result'];
+          _smskod = resp['code'];
+          if (result == false)
+            print('Ошибка отправки смс: $message');
+        }
+        else
+          print('Ошибка отправки смс $message');
+        print('Присвоен проверочный код $_smskod');
+      }
+    } catch (error) {
+      print("Ошибка при получении смс кода: $error");
+    }
   }
 
   @override
@@ -107,30 +148,37 @@ class __FormContentState extends State<_FormContent> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(
+            PhoneFormField(
+              key: Key('phone-field'),
+              defaultCountry: IsoCode.RU,
+              validator: PhoneValidator.validMobile(),
               enabled: !_isPasswordVisible,
-              //controller: _loginController,
+              autofocus: !_isPasswordVisible,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 labelText: 'Телефон',
                 hintText: 'Введите ваш номер телефона',
-                prefixIcon: Icon(Icons.phone),
+                //prefixIcon: Icon(Icons.phone),
+                icon: Icon(Icons.phone),
                 border: OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.next,
-              onFieldSubmitted: (_tel_value) {
+              onSubmitted: (_tel_value) {
                 print('Введено значение телефона : ${_tel_value}');
-                setState(() {
-                  _isPasswordVisible = true;
-                  _smskod = '4565';
-                  login = _tel_value;
+                _isPasswordVisible = true;
+                login = '8${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
+                print(login);
+                httpGetPhoneValidate().then((value) {
+                  setState(() {
+                  });
                 });
               },
             ),
             _gap(),
             if (_isPasswordVisible == true)
                 TextFormField(
-                  //controller: _passwordController,
+                  autofocus: _isPasswordVisible,
+                  keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter some text';
