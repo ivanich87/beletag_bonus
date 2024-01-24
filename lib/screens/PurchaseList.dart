@@ -15,7 +15,7 @@ class scrPurchaseListScreen extends StatefulWidget {
 }
 
 class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
-  var objectList = [];
+  List <PurchaseList> objectList = [];
   bool success = false;
   var resp = [];
 
@@ -35,6 +35,7 @@ class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
           for (var noteJson in resp) {
             objectList.add(PurchaseList.fromJson(noteJson));
           }
+          objectList.sort((a, b) => b.dt.compareTo(a.dt));
         }
       }
     } catch (error) {

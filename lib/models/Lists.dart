@@ -145,6 +145,20 @@ class TransactionList {
   }
 }
 
+class BonusPromoBalanceList {
+  late DateTime dt;
+  late String comment;
+  late num summa;
+
+  BonusPromoBalanceList(this.dt, this.comment, this.summa);
+
+  BonusPromoBalanceList.fromJson(Map<String, dynamic> json) {
+    dt = DateTime.tryParse(json['DateOfDebiting']) ?? DateTime(2023);
+    comment = json['Comment'] ?? '';
+    summa = json['Summa'] ?? 0;
+  }
+}
+
 
 class Globals {
   static var anThemeIndex = 0;

@@ -183,7 +183,7 @@ class _TitleRowText extends StatelessWidget {
       child:
       Text.rich(TextSpan(children: [
         TextSpan(text: '$caption: ', style: TextStyle(fontSize: 22, fontFamily: 'CourrierPrime')),
-        TextSpan(text: '$value', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white60)),
+        TextSpan(text: '$value', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: (Globals.anThemeIndex==2) ? Colors.white60 : Colors.grey)),
       ],
       )
       ),

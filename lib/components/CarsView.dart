@@ -1,11 +1,12 @@
 //import 'dart:js';
 
+import 'package:beletag/screens/BonusPromo.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 
 import '../screens/BonusTransaction.dart';
 
-class CreditCardsPage extends StatelessWidget {
+class CreditCardsPage extends StatefulWidget {
   const CreditCardsPage({super.key, required this.cardNumber, required this.name, required this.secondName, required this.bonusTotal, required this.bonusPromo, required this.barcode});
   final String cardNumber;
   final String name;
@@ -13,8 +14,13 @@ class CreditCardsPage extends StatelessWidget {
   final int bonusTotal;
   final int bonusPromo;
   final String barcode;
-  //final double heightCard = 210;
 
+  @override
+  State<CreditCardsPage> createState() => _CreditCardsPageState();
+}
+
+class _CreditCardsPageState extends State<CreditCardsPage> {
+  //final double heightCard = 210;
   @override
   Widget build(BuildContext context) {
     // if (bonusPromo>0)
@@ -28,11 +34,11 @@ class CreditCardsPage extends StatelessWidget {
           children: <Widget>[
             _buildCreditCard(
                 color: Colors.black,//Colors.grey,//Colors.black,
-                cardNumber: cardNumber,
-                cardHolder: '$name $secondName',
-                bonusTotal: "$bonusTotal",
-                bonusPromo: "$bonusPromo",
-                barcode: barcode,
+                cardNumber: widget.cardNumber,
+                cardHolder: '${widget.name} ${widget.secondName}',
+                bonusTotal: "${widget.bonusTotal}",
+                bonusPromo: "${widget.bonusPromo}",
+                barcode: widget.barcode,
             ),
           ],
         ),
@@ -86,30 +92,40 @@ class CreditCardsPage extends StatelessWidget {
           children: <Widget>[
             //_buildLogosBlock(),
             Padding(
-              padding: const EdgeInsets.only(top: 12.0),
+              padding: const EdgeInsets.only(top: 8.0),
               child:
-              Row(
+              Column(
                 children: [
-                  Text.rich(TextSpan(children: [
-                    TextSpan(text: 'Доступно бонусов: ', style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'CourrierPrime')),
-                    TextSpan(text: bonusTotal, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.yellowAccent)),
-                  ],
-                  )
+                  Container(
+                    height: 26,
+                    child: Row(
+                      children: [
+                        Text.rich(TextSpan(children: [
+                          TextSpan(text: 'Доступно бонусов: ', style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'CourrierPrime')),
+                          TextSpan(text: bonusTotal, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.yellowAccent)),
+                        ],
+                        )
+                        ),
+                        IconButton(
+                          iconSize: 26,
+                          padding: EdgeInsets.only(top: 3),
+                          icon: Icon(Icons.info_outlined),
+                          style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.yellowAccent)),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusTransactionScreen(cardNumber, bonusTotal)));
+                        },
+                        )
+                      ],
+                    ),
                   ),
-                  IconButton(onPressed: null, icon: Icon(Icons.info_outlined), iconSize: 24, style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.red)),)
-                  //IconButton(onPressed: null, iconSize: 24, icon: Icon(Icons.info_outlined), style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.yellowAccent)),
-                  //onPressed: () {
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusTransactionScreen(cardNumber)));
-                  //},
-                  //)
+                  bonusPromoWidget(bonusPromo, cardNumber),
                 ],
               ),
             ),
-            bonusPromoWidget(bonusPromo),
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: 60, width: 250, child: SfBarcodeGenerator(value: barcode, symbology: EAN13(), showValue: true,)),
+              : Container(height: 100, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white),)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,18 +198,29 @@ class CreditCardsPage extends StatelessWidget {
     );
   }
 
-  bonusPromoWidget(bonusPromo) {
+  bonusPromoWidget(bonusPromo, cardNumber) {
       if (bonusPromo != '0') {
-      return Row(
-        children: [
-          Text.rich(TextSpan(children: [
-            TextSpan(text: 'Скоро сгорят: ', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'CourrierPrime')),
-            TextSpan(text: bonusPromo, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.red)),
+      return Container(
+        height: 28,
+        padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+        child: Row(
+          children: [
+            Text.rich(TextSpan(children: [
+              TextSpan(text: 'Скоро сгорят: ', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'CourrierPrime')),
+              TextSpan(text: bonusPromo, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
+            ],
+            )
+            ),
+            IconButton(
+              iconSize: 26,
+              padding: EdgeInsets.only(top: 1),
+              icon: Icon(Icons.info_outlined), style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.red)),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusPromoScreen(cardNumber, bonusPromo)));
+              },
+            )
           ],
-          )
-          ),
-          IconButton(onPressed: null, icon: Icon(Icons.info_outlined), iconSize: 24, style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.red)),)
-        ],
+        ),
       );
       } else return SizedBox(height: 1,);
   }

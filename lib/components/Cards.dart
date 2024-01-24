@@ -244,12 +244,47 @@ class _CardTransactionListState extends State<CardTransactionList> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
           child: ListTile(
-              //leading: Text('${DateFormat('dd.MM.yyyy').format(widget.event.dt)}',
-              title: Text('${widget.event.tip}', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+              title: Text(DateFormat('dd.MM.yyyy').format(widget.event.dt), style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
               subtitle: Text(widget.event.comment),
-              trailing: Text('${widget.event.bonus_add} руб', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.green))
+              trailing: Text('${widget.event.bonus_add - widget.event.bonus_dec} руб', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: (widget.event.bonus_add - widget.event.bonus_dec>0) ? Colors.green : Colors.red)),
+              //leading: Text(DateFormat('dd.MM.yyyy').format(widget.event.dt))
           ),
         )
+    );
+  }
+}
+
+
+class CardBonusPromoList extends StatefulWidget {
+  const CardBonusPromoList({
+    super.key,
+    required this.event
+  });
+
+  final BonusPromoBalanceList event;
+
+  @override
+  State<CardBonusPromoList> createState() => _CardBonusPromoListState();
+}
+
+class _CardBonusPromoListState extends State<CardBonusPromoList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+      child: ListTile(
+        //shape: RoundedRectangleBorder(side: BorderSide(color: Colors.black12, style: BorderStyle.solid)),
+        title: Text('Дата списания ' + DateFormat('dd.MM.yy').format(widget.event.dt), style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+        subtitle: Text(widget.event.comment),
+        trailing: Text('${widget.event.summa} руб', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.red)),
+        //leading: Text(DateFormat('dd.MM.yyyy').format(widget.event.dt))
+      ),
     );
   }
 }

@@ -6,22 +6,22 @@ import 'package:beletag/components/Cards.dart';
 import 'package:http/http.dart' as http;
 
 
-class scrBonusTransactionScreen extends StatefulWidget {
+class scrBonusPromoScreen extends StatefulWidget {
   final String id;
   final String sums;
-  scrBonusTransactionScreen(this.id, this.sums);
+  scrBonusPromoScreen(this.id, this.sums);
 
   @override
-  State<scrBonusTransactionScreen> createState() => _scrBonusTransactionScreenState();
+  State<scrBonusPromoScreen> createState() => _scrBonusPromoScreenState();
 }
 
-class _scrBonusTransactionScreenState extends State<scrBonusTransactionScreen> {
-  List <TransactionList> objectList = [];
+class _scrBonusPromoScreenState extends State<scrBonusPromoScreen> {
+  List <BonusPromoBalanceList> objectList = [];
   bool success = false;
   var resp = [];
 
-  Future httpGetTransactionsList() async {
-    var _url=Uri(path: '/c/beletag_bonus/hs/v1/transactions/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
+  Future httpGetPromoList() async {
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/balancedetail/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -34,9 +34,9 @@ class _scrBonusTransactionScreenState extends State<scrBonusTransactionScreen> {
         if (success=true) {
           resp = notesJson['response'] ?? '';
           for (var noteJson in resp) {
-            objectList.add(TransactionList.fromJson(noteJson));
+            objectList.add(BonusPromoBalanceList.fromJson(noteJson));
           }
-          objectList.sort((a, b) => b.dt.compareTo(a.dt));
+          objectList.sort((a, b) => a.dt.compareTo(b.dt));
         }
       }
     } catch (error) {
@@ -46,7 +46,7 @@ class _scrBonusTransactionScreenState extends State<scrBonusTransactionScreen> {
 
   @override
   void initState() {
-    httpGetTransactionsList().then((value) {
+    httpGetPromoList().then((value) {
       setState(() {
       });
     });
@@ -65,25 +65,27 @@ class _scrBonusTransactionScreenState extends State<scrBonusTransactionScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Всего бонусов: ', style: TextStyle(fontSize: 24)),
-                Text('${widget.sums}', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green)),
+                Text('Скоро сгорят: ', style: TextStyle(fontSize: 24)),
+                Text('${widget.sums} руб', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)),
               ],
             ),
           ),
 
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text('Вы можете оплачивать бонусами до 30% от суммы чека', style: TextStyle(fontSize: 16)),
+            child: Text('Остатки бонусов, начисляемых по промо-акциям, автоматически списываются после истечения их срока действия', style: TextStyle(fontSize: 16)),
           ),
+          Divider(),
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) => Divider(),
               padding: EdgeInsets.all(10),
               physics: BouncingScrollPhysics(),
               reverse: false,
               itemCount: objectList.length,
-              itemBuilder: (_, index) => CardTransactionList(event: objectList[index],),
+              itemBuilder: (_, index) => CardBonusPromoList(event: objectList[index],),
             ),
           ),
         ],

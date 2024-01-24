@@ -1,3 +1,5 @@
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:beletag/components/CarsView.dart';
 import 'package:beletag/screens/PurchaseList.dart';
@@ -10,6 +12,7 @@ import 'package:beletag/screens/Settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher_string.dart';
 //import 'package:intl/intl.dart';
 
 class scrHomeScreen extends StatefulWidget {
@@ -219,6 +222,20 @@ class _ProfileIcon extends StatelessWidget {
           if (item == Menu.itemSettings) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
           }
+          if (item == Menu.itemInfo) {
+            showAboutDialog(
+              context: context,
+              applicationVersion: '1.0.1',
+              applicationIcon: Icon(Icons.icecream),
+              //applicationLegalese: 'Разработчик: Роганов Владимир',
+              children: <Widget>[
+                Text('Приложение для бонусной системы магазинов Бельетаж, Beleta, Clever. '),
+                Text('Правила бонусной программы :'),
+                InkWell(child: Text('https://cleverwear.ru/#rules', style: TextStyle(decoration: TextDecoration.underline, color: Colors.blue),), onTap: () => launchUrlString('https://cleverwear.ru/#rules',mode: LaunchMode.inAppBrowserView),)
+              ]
+            );
+          }
+          //https://cleverwear.ru/#rules
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(

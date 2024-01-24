@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../components/GeneralFunction.dart';
+
 
 class scrShopsViewScreen extends StatefulWidget {
    final String id;
@@ -88,7 +90,7 @@ class _scrShopsViewScreenState extends State<scrShopsViewScreen> {
               ListTile(title: _CustomText(title: 'Этож: $level'),),
             ListTile(title: _CustomText(title: 'Вывеска: $brand_name'),),
             if (phone.length>0)
-              ListTile(title: _CustomText(title: 'Телефон: $phone'), trailing: IconButton(onPressed: (){}, icon: Icon(Icons.phone_enabled))),
+              ListTile(title: _CustomText(title: 'Телефон: $phone'), trailing: IconButton(onPressed: () => makingPhoneCall(phone, 1), icon: Icon(Icons.phone_enabled))),
             SizedBox(height: 10,),
             Center(child: _CustomText(title: comment)),
           ],

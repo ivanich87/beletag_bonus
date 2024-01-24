@@ -147,8 +147,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      theme: ThemeData.light().copyWith(cardColor: Colors.black12),
-      darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[400]), //grey[850]
+      theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black),
+      darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white), //grey[850]
       themeMode: ThemeMode.values[themeIndex],
       title: 'Бельетаж>',
 

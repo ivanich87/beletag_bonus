@@ -137,15 +137,15 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
               children: [
                 _CustomHeader(title: 'ФИО'),
                 ListTile(leading: Icon(Icons.manage_accounts_rounded), title: _CustomText(title: '$last_name $name $second_name'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(1)),)),
-                Divider(color: Colors.white, thickness: 2, ),
+                Divider(thickness: 2, ),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Телефон'),
                 ListTile(leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(2)),)),
-                Divider(color: Colors.white, thickness: 2),
+                Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'E-mail'),
                 ListTile(leading: (confirmed_email ? Icon(Icons.mark_email_read, color: Colors.green) : Icon(Icons.mark_email_unread_rounded, color: Colors.red)), title: _CustomText(title: '$email'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(3)),)),
-                Divider(color: Colors.white, thickness: 2),
+                Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'День рождения'),
                 ListTile(leading: Icon(Icons.calendar_month), title: _CustomText(title: DateFormat('dd.MM.yyyy').format(birthday).toString()), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async { //_tripEditModalBottomSheet(context, _tripEditWidgets(4))
@@ -157,11 +157,11 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                     });
                   }
                 },)),
-                Divider(color: Colors.white, thickness: 2),
+                Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Пол'),
                 ListTile(leading: (gender=='F') ? Icon(Icons.female, color: Colors.pinkAccent,) : Icon(Icons.male, color: Colors.lightBlue), title: _CustomText(title: (gender=='F') ? 'Женский' : 'Мужской'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(5)),)),
-                Divider(color: Colors.white, thickness: 2),
+                Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Разрешить рассылку'),
                 ListTile(enabled: confirmed_email, leading: Icon(Icons.email_outlined), title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: notify_email, onChanged: (value) {
@@ -181,7 +181,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
 
                   userDataEdit = true;
                 },)),
-                Divider(color: Colors.white, thickness: 2),
+                Divider(thickness: 2),
                 //SizedBox(height: 10,),
               ],
           ),
