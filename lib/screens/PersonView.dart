@@ -56,6 +56,8 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           gender = resp['gender'];
           //birthday = DateTime.tryParse(resp['birthday']));
           birthday = DateTime.tryParse(resp['birthday']) ?? DateTime(2023);
+          if (birthday==null || birthday.compareTo(DateTime(1950))==-1)
+            birthday=DateTime(1950);
           notify_email = resp['notify_email'];
           notify_sms = resp['notify_sms'];
           level = resp['level'];
@@ -149,7 +151,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'День рождения'),
                 ListTile(leading: Icon(Icons.calendar_month), title: _CustomText(title: DateFormat('dd.MM.yyyy').format(birthday).toString()), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async { //_tripEditModalBottomSheet(context, _tripEditWidgets(4))
-                  DateTime? pickeddate = await showDatePicker(context: context, initialDate: birthday, firstDate: DateTime(1940), lastDate: DateTime(2015));
+                  DateTime? pickeddate = await showDatePicker(locale: Locale("ru", "RU"), context: context, initialDate: birthday, firstDate: DateTime(1940), lastDate: DateTime(2015));
                   if (pickeddate != null) {
                     setState(() {
                       birthday = pickeddate;

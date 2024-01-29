@@ -17,6 +17,8 @@ class scrShopsListScreen extends StatefulWidget {
 class _scrShopsListScreenState extends State<scrShopsListScreen> {
   //var objectList = [];
   List <ShopsList> objectList = [];
+  List <ShopsList> objectListFiltered = [];
+  bool _isActive = false;
   bool success = false;
   var resp = [];
 
@@ -37,6 +39,7 @@ class _scrShopsListScreenState extends State<scrShopsListScreen> {
             objectList.add(ShopsList.fromJson(noteJson));
           }
           objectList.sort((a, b) => a.address.compareTo(b.address));
+          objectListFiltered = objectList;
           }
       }
     } catch (error) {
@@ -44,6 +47,11 @@ class _scrShopsListScreenState extends State<scrShopsListScreen> {
     }
   }
 
+  void _findList(value) {
+    setState(() {
+      objectListFiltered = objectList.where((element) => element.address.toLowerCase().contains(value.toLowerCase())).toList();
+    });
+  }
   @override
   void initState() {
     httpGetListObject().then((value) {
@@ -56,7 +64,7 @@ class _scrShopsListScreenState extends State<scrShopsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const SearchBar(),
+          title: SearchBar(),
           //centerTitle: true,
           //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
@@ -64,26 +72,13 @@ class _scrShopsListScreenState extends State<scrShopsListScreen> {
           padding: EdgeInsets.all(10),
           physics: BouncingScrollPhysics(),
           reverse: false,
-          itemCount: objectList.length,
-          itemBuilder: (_, index) => CardShopsList(event: objectList[index],),
+          itemCount: objectListFiltered.length,
+          itemBuilder: (_, index) => CardShopsList(event: objectListFiltered[index],),
         ),
     );
   }
-}
 
-class SearchBar extends StatefulWidget {
-  const SearchBar({Key? key}) : super(key: key);
-
-  @override
-  State<SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<SearchBar>
-    with SingleTickerProviderStateMixin {
-  bool _isActive = false;
-
-  @override
-  Widget build(BuildContext context) {
+  SearchBar() {
     return Row(
       children: [
         if (!_isActive)
@@ -94,28 +89,33 @@ class _SearchBarState extends State<SearchBar>
             alignment: Alignment.centerRight,
             child: AnimatedSize(
               duration: const Duration(milliseconds: 250),
-              child: _isActive
+              child: (_isActive==true)
                   ? Container(
-                      width: double.infinity,
-                      height: 40,
-                      decoration: BoxDecoration(
-                      color: Colors.white30,
-                      borderRadius: BorderRadius.circular(4.0)),
-                    child: TextField(
-                      decoration: InputDecoration(
+                    width: double.infinity,
+                    height: 40,
+                    decoration: BoxDecoration(
+                    color: Colors.white30,
+                    borderRadius: BorderRadius.circular(4.0)),
+                   child: TextField(
+                    decoration: InputDecoration(
                       hintText: 'Введите строку для поиска',
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon: IconButton(
                           onPressed: () {
                             setState(() {
                               _isActive = false;
+                              objectListFiltered = objectList;
+                              print('Сбросили фильтр');
                             });
                           },
                           icon: const Icon(Icons.close))),
+                  onChanged: (value) {
+                    _findList(value);
+                  },
                 ),
               )
                   : IconButton(
-                      onPressed: () {
+                    onPressed: () {
                       setState(() {
                         _isActive = true;
                       });
@@ -128,3 +128,4 @@ class _SearchBarState extends State<SearchBar>
     );
   }
 }
+

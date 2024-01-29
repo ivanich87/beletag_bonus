@@ -1,3 +1,4 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:beletag/models/Lists.dart';
 import 'package:beletag/screens/loading.dart';
 import 'package:flutter/material.dart';
@@ -146,6 +147,15 @@ class _MyAppState extends State<MyApp> {
     });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''),  //code
+        Locale('ru', ''), // arabic, no country code
+      ],
 
       theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black),
       darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white), //grey[850]

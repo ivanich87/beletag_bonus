@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:beletag/screens/NewAccount.dart';
+import 'package:beletag/screens/about.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 import 'package:http/http.dart' as http;
 
@@ -84,6 +86,7 @@ class __FormContentState extends State<_FormContent> {
   static const userInfoKey = 'userInfoKey';
   String login = '';
   String password = '';
+  bool accountNew = false;
 
   bool _isPasswordVisible = false;
   String _smskod = '1111';
@@ -126,6 +129,7 @@ class __FormContentState extends State<_FormContent> {
           resp = notesJson['response'] ?? '';
           result = resp['result'];
           _smskod = resp['code'];
+          accountNew = resp['new'];
           if (result == false)
             print('Ошибка отправки смс: $message');
         }
@@ -166,7 +170,7 @@ class __FormContentState extends State<_FormContent> {
               onSubmitted: (_tel_value) {
                 print('Введено значение телефона : ${_tel_value}');
                 _isPasswordVisible = true;
-                login = '8${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
+                login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
                 print(login);
                 httpGetPhoneValidate().then((value) {
                   setState(() {
@@ -201,7 +205,10 @@ class __FormContentState extends State<_FormContent> {
                         password = _value_kod;
                         _setUserInfo();
                         print('Аутентификация пройдена успешно');
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen(login)), (route) => false,);
+                        if (accountNew==true)
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
+                        else
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen(login)), (route) => false,);
                       }
                     },
                   ),

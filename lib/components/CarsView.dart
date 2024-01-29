@@ -125,7 +125,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: 100, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white),)),
+              : Container(height: (bonusPromo==0 || bonusPromo==null) ? 100 : 120, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white),)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
