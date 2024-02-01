@@ -7,7 +7,7 @@ import 'package:beletag/screens/logon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
 
 
   Future httpGetUserData() async {
+    _load = true;
     var prefs = await SharedPreferences.getInstance();
     final String? Inf = prefs.getString(userInfoKey);
     if (Inf == null) {
@@ -114,17 +115,28 @@ class _MyAppState extends State<MyApp> {
       "login": _login,
       "password": _password
     };
-    try {
-      var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
-      if (response.statusCode == 200) {
-        var notesJson = json.decode(response.body);
-        success = notesJson['success'] ?? false;
-        message = notesJson['message'] ?? '';
-        logIn = notesJson['response'] ?? false;
-        print('Ответ авторизации: $logIn Текст ответа: $message');
+
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      try {
+        var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+        if (response.statusCode == 200) {
+          var notesJson = json.decode(response.body);
+          success = notesJson['success'] ?? false;
+          message = notesJson['message'] ?? '';
+          logIn = notesJson['response'] ?? false;
+          print('Ответ авторизации: $logIn Текст ответа: $message');
+        }
+      } catch (error) {
+        print("Ошибка при формировании списка: $error");
+        _load = false;
+        //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Ошибка подключения к серверу: $error"), backgroundColor: Colors.red,));
       }
-    } catch (error) {
-      print("Ошибка при формировании списка: $error");
+    }
+    else {
+      print('Нет инета');
+      _load = false;
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Нет подключения к интернету"), backgroundColor: Colors.red,));
     }
   }
 
@@ -133,7 +145,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     httpGetUserData().then((value) {
       print('111111111111');
-      _load = true;
+      //_load = true;
       setState(() {
       });
     });
@@ -160,7 +172,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black),
       darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white), //grey[850]
       themeMode: ThemeMode.values[themeIndex],
-      title: 'Бельетаж>',
+      title: 'Бельетаж',
 
       home: (logIn == true) ? scrHomeScreen(_login) : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
     );

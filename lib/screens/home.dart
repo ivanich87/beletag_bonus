@@ -24,6 +24,7 @@ class scrHomeScreen extends StatefulWidget {
 }
 
 class _scrHomeScreenState extends State<scrHomeScreen> {
+  bool front = true;
 
   bool success = false;
   String message = '';
@@ -137,8 +138,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
-                    CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode),
+                    Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
+                    InkWell(
+                      child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: front),
+                      onTap: () {
+                        setState(() {
+                          front = !front;
+                        });
+                      },
+                    ),
                     Card(
                         child: ListTile(
                             title: Text('История покупок', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
@@ -225,8 +233,8 @@ class _ProfileIcon extends StatelessWidget {
           if (item == Menu.itemInfo) {
             showAboutDialog(
               context: context,
-              applicationVersion: '1.0.1',
-              applicationIcon: Icon(Icons.icecream),
+              applicationVersion: 'Роганов Владимир',
+              applicationIcon: Image.asset('assets/images/logo.png', width: 60),
               //applicationLegalese: 'Разработчик: Роганов Владимир',
               children: <Widget>[
                 Text('Приложение для бонусной системы магазинов Бельетаж, Beleta, Clever. '),
@@ -235,7 +243,6 @@ class _ProfileIcon extends StatelessWidget {
               ]
             );
           }
-          //https://cleverwear.ru/#rules
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(

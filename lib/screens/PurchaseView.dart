@@ -145,7 +145,7 @@ class _PageTitle extends StatelessWidget {
         _TitleRowText(caption: 'Номер чека', value: number),
         _TitleRowText(caption: 'Дата чека', value: DateFormat('dd.MM.yyyy').format(dt)),
         Divider(color: Colors.white60, thickness: 2),
-        _TitleRowText(caption: 'Магазин', value: shopName),
+        _TitleRowText(caption: 'Магазин', value: shopAddress),
         SizedBox(height: 5),
         Text('$shopAddress', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic, color: Colors.white60)),
         Divider(color: Colors.white60, thickness: 2),

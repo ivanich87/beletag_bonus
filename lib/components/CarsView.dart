@@ -7,13 +7,14 @@ import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 import '../screens/BonusTransaction.dart';
 
 class CreditCardsPage extends StatefulWidget {
-  const CreditCardsPage({super.key, required this.cardNumber, required this.name, required this.secondName, required this.bonusTotal, required this.bonusPromo, required this.barcode});
+  const CreditCardsPage({super.key, required this.cardNumber, required this.name, required this.secondName, required this.bonusTotal, required this.bonusPromo, required this.barcode, required this.front});
   final String cardNumber;
   final String name;
   final String secondName;
   final int bonusTotal;
   final int bonusPromo;
   final String barcode;
+  final bool front;
 
   @override
   State<CreditCardsPage> createState() => _CreditCardsPageState();
@@ -32,14 +33,18 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildCreditCard(
+            if (widget.front==true)
+              _buildCreditCard(
                 color: Colors.black,//Colors.grey,//Colors.black,
                 cardNumber: widget.cardNumber,
                 cardHolder: '${widget.name} ${widget.secondName}',
                 bonusTotal: "${widget.bonusTotal}",
                 bonusPromo: "${widget.bonusPromo}",
                 barcode: widget.barcode,
-            ),
+            )
+            else
+              _buildCreditBackCard(color: Colors.black, barcode: widget.barcode)
+            ,
           ],
         ),
       ),
@@ -84,7 +89,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Container(
-        height: 230,
+        height: 235,
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 22.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +130,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: (bonusPromo==0 || bonusPromo==null) ? 100 : 120, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white),)),
+              : Container(height: (bonusPromo==0 || bonusPromo==null) ? 120 : 110, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white), )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,6 +144,34 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
       ),
     );
   }
+
+  Card _buildCreditBackCard(
+      {required Color color,
+        required String barcode}) {
+    return Card(
+      elevation: 4.0,
+      color: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Container(
+        height: 235,
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0, top: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: (barcode.length<13)
+                  ? Container(height: 190, width: 300, child: Text(''))
+                  : Container(height: 190, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white), )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   // Build the top row containing logos
   Row _buildLogosBlock() {
