@@ -1,3 +1,7 @@
+//import 'dart:html';
+import 'dart:io' as IO;
+import 'package:beletag/components/firebase_api.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:beletag/models/Lists.dart';
 import 'package:beletag/screens/loading.dart';
@@ -9,9 +13,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:beletag/components/firebase_api.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (IO.Platform.isAndroid)
+    await Firebase.initializeApp(options: FirebaseOptions(apiKey: 'AIzaSyAB5uYf1fmyAJF4yLBRL3UJ4AA6-O8Gc_M', appId: '1:84640627710:android:b1934e3f8ed9c6959e1eaf', messagingSenderId: '84640627710', projectId: 'cleverwear-ec068'));
+  else
+    await Firebase.initializeApp();
+
+  await FirebaseApi().initNotification();
   runApp(const MyApp());
 }
 
@@ -63,6 +74,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   static const userInfoKey = 'userInfoKey';
+  bool _requireConsent = false;
+  bool _enableConsentButton = false;
+  String _debugLabelString = "";
 
   bool _load = false;
   String _login = '';
@@ -76,13 +90,13 @@ class _MyAppState extends State<MyApp> {
 
 
   Future httpGetUserData() async {
-    _load = true;
+    _load = false;
     var prefs = await SharedPreferences.getInstance();
     final String? Inf = prefs.getString(userInfoKey);
     if (Inf == null) {
       _login = '';
       _password = '';
-      _load = true;
+      //_load = true;
       themeIndex = 0;
       print('не нашли данных по ключу $userInfoKey');
     } else {
@@ -106,6 +120,13 @@ class _MyAppState extends State<MyApp> {
     Globals.setLogin(_login);
     Globals.setPasswodr(_password);
 
+    String _platform = '';
+    if (IO.Platform.isAndroid)
+      _platform = 'android';
+    if (IO.Platform.isIOS)
+      _platform = 'ios';
+
+    print('TOKEN!!!!!!!!!!! ' + Globals.anFCM.toString());
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/logon/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
@@ -113,7 +134,9 @@ class _MyAppState extends State<MyApp> {
     };
     var _body = <String, String> {
       "login": _login,
-      "password": _password
+      "password": _password,
+      "fcm": Globals.anFCM,
+      "platform": _platform
     };
 
     final connectivityResult = await (Connectivity().checkConnectivity());
@@ -125,6 +148,7 @@ class _MyAppState extends State<MyApp> {
           success = notesJson['success'] ?? false;
           message = notesJson['message'] ?? '';
           logIn = notesJson['response'] ?? false;
+          _load = true;
           print('Ответ авторизации: $logIn Текст ответа: $message');
         }
       } catch (error) {
@@ -140,7 +164,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-
   @override
   void initState() {
     httpGetUserData().then((value) {
@@ -151,7 +174,9 @@ class _MyAppState extends State<MyApp> {
     });
     // TODO: implement initState
     super.initState();
+    //initPlatformState();
   }
+
   @override
   Widget build(BuildContext context) {
     ChangeNotifierProvider((ref) {

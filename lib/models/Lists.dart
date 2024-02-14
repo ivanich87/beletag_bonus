@@ -164,6 +164,7 @@ class Globals {
   static var anThemeIndex = 0;
   static var anLogin = '';
   static var anPassword = '';
+  static var anFCM = '';
 
   static printInteger() {
     print(anThemeIndex);
@@ -179,6 +180,10 @@ class Globals {
 
   static setPasswodr(String a) {
     anPassword = a;
+  }
+
+  static setFCM(String a) {
+    anFCM = a;
   }
 
 }

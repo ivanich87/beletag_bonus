@@ -45,6 +45,8 @@ dependencies:
   flutter_riverpod: ^2.4.9
   flutter_launcher_icons: "^0.13.1"
   connectivity_plus: ^5.0.2
+  firebase_core: ^2.25.4
+  firebase_messaging: ^14.7.15
   http:
 
 dev_dependencies:

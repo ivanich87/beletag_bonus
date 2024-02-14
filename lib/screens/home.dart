@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -23,8 +25,11 @@ class scrHomeScreen extends StatefulWidget {
   State<scrHomeScreen> createState() => _scrHomeScreenState();
 }
 
-class _scrHomeScreenState extends State<scrHomeScreen> {
-  bool front = true;
+class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProviderStateMixin {
+  bool _isFront = true;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
 
   bool success = false;
   String message = '';
@@ -116,9 +121,37 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     });
     // TODO: implement initState
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _flipCard() {
+    if (_controller.status != AnimationStatus.forward) {
+      if (_isFront) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+      _isFront = !_isFront;
+    }
+  }
+
   Widget build(BuildContext context) {
-    print('cardNumber: $cardNumber, name: $name, secondName: $secondName, bonusTotal: $bonusTotal, bonusPromo: $bonusPromo, barcode: $barcode');
+    //print('cardNumber: $cardNumber, name: $name, secondName: $secondName, bonusTotal: $bonusTotal, bonusPromo: $bonusPromo, barcode: $barcode');
     return Scaffold(
         appBar: AppBar(
           //backgroundColor: Colors.transparent,
@@ -140,11 +173,14 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
               children: [
                     Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
                     InkWell(
-                      child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: front),
+                      child: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(_animation.value * math.pi),
+                          child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: _isFront),
+                      ),
+                      //CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: _isFront),
                       onTap: () {
-                        setState(() {
-                          front = !front;
-                        });
+                        _flipCard();
                       },
                     ),
                     Card(
