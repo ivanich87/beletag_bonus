@@ -126,17 +126,16 @@ class _MyAppState extends State<MyApp> {
     if (IO.Platform.isIOS)
       _platform = 'ios';
 
-    print('TOKEN!!!!!!!!!!! ' + Globals.anFCM.toString());
+    Globals.setPlatform(_platform);
+
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/logon/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     var _body = <String, String> {
       "login": _login,
-      "password": _password,
-      "fcm": Globals.anFCM,
-      "platform": _platform
+      "password": _password
     };
 
     final connectivityResult = await (Connectivity().checkConnectivity());
@@ -194,8 +193,8 @@ class _MyAppState extends State<MyApp> {
         Locale('ru', ''), // arabic, no country code
       ],
 
-      theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black),
-      darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white), //grey[850]
+      theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black, textTheme: Typography().black.apply(fontFamily: 'Montserrat')),
+      darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white, textTheme: Typography().white.apply(fontFamily: 'Montserrat')), //grey[850]
       themeMode: ThemeMode.values[themeIndex],
       title: 'Бельетаж',
 

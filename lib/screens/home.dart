@@ -15,6 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
+
+import '../models/Lists.dart';
 //import 'package:intl/intl.dart';
 
 class scrHomeScreen extends StatefulWidget {
@@ -52,11 +54,35 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
 
   var resp;
 
+  Future httpSetUserData() async {
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/userproperty/', host: 's4.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var _body = <String, String> {
+        "login": Globals.anLogin,
+        "fcm": Globals.anFCM,
+        "platform": Globals.anPlatform
+      };
+
+      var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+      if (response.statusCode == 200) {
+        var notesJson = json.decode(response.body);
+        success = notesJson['success'] ?? false;
+        message = notesJson['message'] ?? '';
+      }
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
+  }
+
   Future httpGetUserData() async {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -83,6 +109,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
         print('ответ от сервера: ' + birthday.toString());
 
       }
+      if (Theme.of(context).brightness == Brightness.dark)
+        Globals.anIsDarkTheme=true;
+      else
+        Globals.anIsDarkTheme=false;
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }
@@ -92,7 +122,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/balanceall/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -104,6 +134,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
         bonusTotal = resp['Total'];
         bonusPromo = resp['OfThemPromo'];
         print('Баланс' + bonusTotal.toString());
+
       }
     } catch (error) {
       print("Ошибка при формировании списка: $error");
@@ -115,6 +146,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   void initState() {
     httpGetUserData().then((value) {
       httpGetUserBonusBalance().then((value) {
+        httpSetUserData();
         setState(() {
         });
       });
@@ -148,6 +180,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
       }
       _isFront = !_isFront;
     }
+    httpGetUserBonusBalance();
   }
 
   Widget build(BuildContext context) {
@@ -155,17 +188,18 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
     return Scaffold(
         appBar: AppBar(
           //backgroundColor: Colors.transparent,
-          title: Text('CleverWear'),
+          title: Text('Clever Wear'),
           actions: const [
             Padding(
               padding: EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(child: _ProfileIcon(), backgroundColor: Colors.black,)
+              child: CircleAvatar(child: _ProfileIcon(), backgroundColor: Colors.black26)
             )
           ],
           centerTitle: true,
           //backgroundColor: Colors.grey[900],
           //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
+        backgroundColor: Colors.grey[200],
         body: ListView(
           children: [Center(
             child: Column(
@@ -176,7 +210,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                       child: Transform(
                           alignment: Alignment.center,
                           transform: Matrix4.rotationY(_animation.value * math.pi),
-                          child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: _isFront),
+                          child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: getBarcode(barcode, widget.id), front: _isFront),
                       ),
                       //CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: _isFront),
                       onTap: () {
@@ -243,6 +277,13 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
 
 }
 
+getBarcode(String ean, String phone) {
+  String time = DateTime.now().millisecondsSinceEpoch.toString().substring(0, 10);
+  String bar = 'ean=' + ean + '&time=' + time + '&phone=' + phone;
+  print(bar);
+  return bar;
+}
+
 
 enum Menu { itemInfo, itemSettings, itemOut }
 
@@ -255,7 +296,7 @@ class _ProfileIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<Menu>(
         icon: const Icon(Icons.person, ),
-        iconColor: Colors.grey,
+        iconColor: Colors.white,
         offset: const Offset(0, 40),
         onSelected: (Menu item) async {
           if (item == Menu.itemOut) {

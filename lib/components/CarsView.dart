@@ -35,7 +35,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
           children: <Widget>[
             if (widget.front==true)
               _buildCreditCard(
-                color: Colors.black,//Colors.grey,//Colors.black,
+                color: Colors.grey,//Colors.grey,//Colors.black,
                 cardNumber: widget.cardNumber,
                 cardHolder: '${widget.name} ${widget.secondName}',
                 bonusTotal: "${widget.bonusTotal}",
@@ -43,7 +43,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
                 barcode: widget.barcode,
             )
             else
-              _buildCreditBackCard(color: Colors.black, barcode: widget.barcode)
+              _buildCreditBackCard(color: Colors.grey, barcode: widget.barcode)
             ,
           ],
         ),
@@ -90,32 +90,39 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
       ),
       child: Container(
         height: 235,
-        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 22.0),
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             //_buildLogosBlock(),
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: 7.0),
               child:
               Column(
                 children: [
                   Container(
-                    height: 26,
+                    height: 30,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text.rich(TextSpan(children: [
-                          TextSpan(text: 'Доступно бонусов: ', style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: 'CourrierPrime')),
-                          TextSpan(text: bonusTotal, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.yellowAccent)),
-                        ],
-                        )
+                        InkWell(
+                          child:
+                          Text.rich(TextSpan(children: [
+                            TextSpan(text: 'Ваш баланс: ', style: TextStyle(color: Colors.black, fontSize: 22, fontFamily: 'Montserrat')),
+                            TextSpan(text: bonusTotal, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                          ],
+                          )
+                          ),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusTransactionScreen(cardNumber, bonusTotal)));
+                          },
                         ),
                         IconButton(
                           iconSize: 26,
                           padding: EdgeInsets.only(top: 3),
                           icon: Icon(Icons.info_outlined),
-                          style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.yellowAccent)),
+                          style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.black)),
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusTransactionScreen(cardNumber, bonusTotal)));
                         },
@@ -130,7 +137,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: (bonusPromo==0 || bonusPromo==null) ? 120 : 110, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white), )),
+              : Container(height: (bonusPromo=='0' || bonusPromo==null) ? 140 : 110, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,7 +171,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
                   ? Container(height: 190, width: 300, child: Text(''))
-                  : Container(height: 190, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.white, textStyle: TextStyle(color: Colors.white), )),
+                  : Container(height: 190, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
             ),
           ],
         ),
@@ -200,12 +207,12 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
         Text(
           '$label',
           style: TextStyle(
-              color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold),
+              color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold),
         ),
         Text(
           '$value',
           style: TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
         )
       ],
     );
@@ -235,19 +242,26 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
       if (bonusPromo != '0') {
       return Container(
         height: 28,
-        padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+        padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
         child: Row(
           children: [
-            Text.rich(TextSpan(children: [
-              TextSpan(text: 'Скоро сгорят: ', style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'CourrierPrime')),
-              TextSpan(text: bonusPromo, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
-            ],
-            )
+            InkWell(
+              child:
+              Text.rich(TextSpan(children: [
+                TextSpan(text: 'Скоро сгорят: ', style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Montserrat')),
+                TextSpan(text: bonusPromo, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+              )
+              ),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusPromoScreen(cardNumber, bonusPromo)));
+                },
             ),
+
             IconButton(
-              iconSize: 26,
-              padding: EdgeInsets.only(top: 1),
-              icon: Icon(Icons.info_outlined), style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.red)),
+              iconSize: 24,
+              padding: EdgeInsets.only(top: 4),
+              icon: Icon(Icons.info_outlined), style: ButtonStyle(iconColor: MaterialStatePropertyAll(Colors.white)),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => scrBonusPromoScreen(cardNumber, bonusPromo)));
               },

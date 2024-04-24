@@ -27,7 +27,7 @@ class _scrAboutScreenState extends State<scrAboutScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/about/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);

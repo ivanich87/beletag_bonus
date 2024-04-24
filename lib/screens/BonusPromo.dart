@@ -24,7 +24,7 @@ class _scrBonusPromoScreenState extends State<scrBonusPromoScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/balancedetail/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -68,7 +68,7 @@ class _scrBonusPromoScreenState extends State<scrBonusPromoScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Скоро сгорят: ', style: TextStyle(fontSize: 24)),
-                Text('${widget.sums} руб', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)),
+                Text('${widget.sums} руб', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               ],
             ),
           ),

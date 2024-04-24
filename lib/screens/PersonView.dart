@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:phone_form_field/phone_form_field.dart';
 
+import '../models/Lists.dart';
+
 
 class scrPersonViewScreen extends StatefulWidget {
    final String id;
@@ -27,6 +29,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
   bool confirmed_email = false;
   String gender = '';
   DateTime birthday = DateTime(2024);
+  DateTime birthday_modify = DateTime(2022);
   bool notify_email = false;
   bool notify_sms = false;
   bool notify_push = false;
@@ -37,7 +40,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       print('Запуск');
@@ -54,12 +57,15 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           email = resp['email'];
           confirmed_email = resp['confirmed_email'];
           gender = resp['gender'];
-          //birthday = DateTime.tryParse(resp['birthday']));
           birthday = DateTime.tryParse(resp['birthday']) ?? DateTime(2023);
+          birthday_modify = DateTime.tryParse(resp['birthday_modify']) ?? DateTime(2023);
           if (birthday==null || birthday.compareTo(DateTime(1950))==-1)
             birthday=DateTime(1950);
+          if (birthday_modify==null || birthday_modify.compareTo(DateTime(1950))==-1)
+            birthday_modify=DateTime(1950);
           notify_email = resp['notify_email'];
           notify_sms = resp['notify_sms'];
+          notify_push = resp['notify_push'];
           level = resp['level'];
         }
       }
@@ -76,7 +82,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     //var _url=Uri(path: '/BonusSystem/hs/v1/user/${widget.id}/', host: 'ut.acewear.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var _body = <String, String> {
@@ -142,7 +148,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                 Divider(thickness: 2, ),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Телефон'),
-                ListTile(leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(2)),)),
+                ListTile(enabled: false, leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () {},)), //=>_tripEditModalBottomSheet(context, _tripEditWidgets(2))
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'E-mail'),
@@ -151,12 +157,22 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'День рождения'),
                 ListTile(leading: Icon(Icons.calendar_month), title: _CustomText(title: DateFormat('dd.MM.yyyy').format(birthday).toString()), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async { //_tripEditModalBottomSheet(context, _tripEditWidgets(4))
+                if (birthday_modify.isBefore(DateTime.now().subtract(Duration(days: 360))))
+                {
                   DateTime? pickeddate = await showDatePicker(locale: Locale("ru", "RU"), context: context, initialDate: birthday, firstDate: DateTime(1940), lastDate: DateTime(2015));
                   if (pickeddate != null) {
                     setState(() {
                       birthday = pickeddate;
                       userDataEdit = true;
                     });
+                  }
+                }
+                else
+                  {
+                    final snackBar = SnackBar(
+                      content: Text('Дату рождения можно менять только раз в году! Вы сможете ее изменить не раньше ' + DateFormat('dd.MM.yyyy').format(birthday_modify.add(Duration(days: 361))).toString()),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                 },)),
                 Divider(thickness: 2),
@@ -166,10 +182,10 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Разрешить рассылку'),
-                ListTile(enabled: confirmed_email, leading: Icon(Icons.email_outlined), title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: notify_email, onChanged: (value) {
+                ListTile(enabled: true, leading: Icon(Icons.email_outlined), title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: notify_email, onChanged: (value) {
                   setState(() {
-                    if (confirmed_email)
-                      notify_email = value;
+                    //if (confirmed_email)
+                    notify_email = value;
                     userDataEdit = true;
                   });
                 },)),
@@ -179,10 +195,12 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                     userDataEdit=true;
                   });
                 },)),
-                ListTile(enabled: false, leading: Icon(Icons.message), title: Text('Push в приложении'), trailing: CupertinoSwitch( value: notify_push, onChanged: (value) {
-
-                  userDataEdit = true;
-                },)),
+              ListTile(leading: Icon(Icons.message), title: Text('Push в приложении'), trailing: CupertinoSwitch(value: notify_push, onChanged: (value) {
+                      setState(() {
+                        notify_push = value;
+                        userDataEdit = true;
+                      });
+                    },)),
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
               ],

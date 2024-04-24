@@ -108,6 +108,11 @@ class ShopsList {
     brand_logo = json['brand_logo'] ?? '';
     region_id = json['region_id'] ?? 0;
     region_name = json['region_name'] ?? 'region_name';
+
+    if (Globals.anIsDarkTheme)
+      {
+        brand_logo = brand_logo.replaceAll('black', 'white');
+      }
   }
 }
 
@@ -165,6 +170,9 @@ class Globals {
   static var anLogin = '';
   static var anPassword = '';
   static var anFCM = '';
+  static var anPlatform = '';
+  static var anAuthorization = 'Basic bW9iaWxlOkF4V3lJdnJBS1prdzY2UzdTMEJP';
+  static var anIsDarkTheme = false;
 
   static printInteger() {
     print(anThemeIndex);
@@ -186,4 +194,11 @@ class Globals {
     anFCM = a;
   }
 
+  static setIsDarkTheme(bool a) {
+    anIsDarkTheme = a;
+  }
+
+  static setPlatform(String a) {
+    anPlatform = a;
+  }
 }

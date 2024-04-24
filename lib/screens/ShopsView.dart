@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:beletag/models/Lists.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,7 +35,7 @@ class _scrShopsViewScreenState extends State<scrShopsViewScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/shop/${widget.id}', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -87,7 +88,7 @@ class _scrShopsViewScreenState extends State<scrShopsViewScreen> {
             if (name_tc.length>0)
               ListTile(title: _CustomText(title: 'Торговой центр: $name_tc'),),
             if (level!='0')
-              ListTile(title: _CustomText(title: 'Этож: $level'),),
+              ListTile(title: _CustomText(title: 'Этаж: $level'),),
             ListTile(title: _CustomText(title: 'Вывеска: $brand_name'),),
             if (phone.length>0)
               ListTile(title: _CustomText(title: 'Телефон: $phone'), trailing: IconButton(onPressed: () => makingPhoneCall(phone, 1), icon: Icon(Icons.phone_enabled))),

@@ -43,7 +43,7 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/add/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     var _body = <String, String> {
       "name": _nameController.text,

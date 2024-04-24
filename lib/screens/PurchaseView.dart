@@ -40,7 +40,7 @@ class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/check/?id=${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -145,9 +145,9 @@ class _PageTitle extends StatelessWidget {
         _TitleRowText(caption: 'Номер чека', value: number),
         _TitleRowText(caption: 'Дата чека', value: DateFormat('dd.MM.yyyy').format(dt)),
         Divider(color: Colors.white60, thickness: 2),
-        _TitleRowText(caption: 'Магазин', value: shopAddress),
-        SizedBox(height: 5),
-        Text('$shopAddress', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic, color: Colors.white60)),
+        _TitleRowText(caption: 'Магазин', value: shopName),
+        SizedBox(height: 2),
+        Text('$shopAddress', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic, color: (Globals.anIsDarkTheme==true) ? Colors.white60 : Colors.black)),
         Divider(color: Colors.white60, thickness: 2),
         _TitleRowText(caption: 'Бонусов списано', value: bonusDec.toString()),
         _TitleRowText(caption: 'Бонусов начислено', value: bonusAdd.toString()),
@@ -157,7 +157,7 @@ class _PageTitle extends StatelessWidget {
         SizedBox(height: 20),
         Padding(padding: const EdgeInsets.only(top: 10.0, left: 20.0),
           child: Text.rich(TextSpan(children: [
-            TextSpan(text: 'Итого: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26, fontFamily: 'CourrierPrime')),
+            TextSpan(text: 'Итого: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26, fontFamily: 'Montserrat')),
             TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(summa), style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.redAccent)),
           ],
           )
@@ -182,8 +182,8 @@ class _TitleRowText extends StatelessWidget {
       padding: const EdgeInsets.only(top: 12.0, left: 8.0),
       child:
       Text.rich(TextSpan(children: [
-        TextSpan(text: '$caption: ', style: TextStyle(fontSize: 22, fontFamily: 'CourrierPrime')),
-        TextSpan(text: '$value', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: (Globals.anThemeIndex==2) ? Colors.white60 : Colors.grey)),
+        TextSpan(text: '$caption: ', style: TextStyle(fontSize: 22, fontFamily: 'Montserrat')),
+        TextSpan(text: '$value', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: (Globals.anIsDarkTheme==true) ? Colors.white60 : Colors.black)),
       ],
       )
       ),

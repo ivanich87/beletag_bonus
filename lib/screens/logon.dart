@@ -50,7 +50,8 @@ class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
-    const String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
+    //const String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
+    const String logoPath = 'https://img.acewear.ru/CleverWearImg/logo_aspro.png';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -117,7 +118,7 @@ class __FormContentState extends State<_FormContent> {
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/phonevalidate/${login}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
