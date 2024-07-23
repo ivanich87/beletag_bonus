@@ -33,6 +33,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
   bool notify_email = false;
   bool notify_sms = false;
   bool notify_push = false;
+  bool notify_systempush = false;
   int level = 0;
   bool blocked = false;
 
@@ -66,6 +67,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           notify_email = resp['notify_email'];
           notify_sms = resp['notify_sms'];
           notify_push = resp['notify_push'];
+          notify_systempush = resp['notify_systempush'];
           level = resp['level'];
         }
       }
@@ -95,6 +97,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
         "birthday": birthday.toString(),
         "notify_email": notify_email.toString(),
         "notify_sms": notify_sms.toString(),
+        "notify_systempush": notify_systempush.toString(),
         "notify_push": notify_push.toString()
       };
       print(_body);
@@ -195,12 +198,18 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                     userDataEdit=true;
                   });
                 },)),
-              ListTile(leading: Icon(Icons.message), title: Text('Push в приложении'), trailing: CupertinoSwitch(value: notify_push, onChanged: (value) {
+              ListTile(leading: Icon(Icons.message), title: Text('Push рассылка'), trailing: CupertinoSwitch(value: notify_push, onChanged: (value) {
                       setState(() {
                         notify_push = value;
                         userDataEdit = true;
                       });
                     },)),
+                ListTile(leading: Icon(Icons.message), title: Text('Системный Push'), trailing: CupertinoSwitch(value: notify_systempush, onChanged: (value) {
+                  setState(() {
+                    notify_systempush = value;
+                    userDataEdit = true;
+                  });
+                },)),
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
               ],

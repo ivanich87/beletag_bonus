@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:beletag/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home.dart';
 
@@ -28,7 +29,8 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
   bool _notify_email = true;
   bool _notify_sms = true;
   bool _notify_push = true;
-  bool _agreement = false;
+  bool _notify_system = true;
+  bool _agreement = true;
   DateTime birthday = DateTime(1990);
   var resp;
   var items = [];
@@ -57,6 +59,7 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
       "birthday": birthday.toString(),
       "notify_email": _notify_email.toString(),
       "notify_sms": _notify_sms.toString(),
+      "notify_systempush": _notify_system.toString(),
       "notify_push": _notify_push.toString()
     };
     try {
@@ -157,19 +160,21 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
                           ],
                         ),
                         Divider(),
-                        ListTile(title: Text('Разрешить Push уведомления с иформацией о бонусах, сроках действия, дополнительных начислениях.'), trailing: CupertinoSwitch(value: _notify_push, onChanged: (bool val) => setState(() => _notify_push = val))),
+                        ListTile(title: Text('Разрешить Push уведомления с иформацией о бонусах, сроках действия, дополнительных начислениях.'), trailing: CupertinoSwitch(value: _notify_system, onChanged: (bool val) => setState(() => _notify_system = val))),
                         Divider(),
                         Text('Подписка на рассылку о скидках и акциях', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
                         ListTile(title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: _notify_email, onChanged: (bool val) => setState(() => _notify_email = val))),
                         ListTile(title: Text('SMS рассылка'), trailing: CupertinoSwitch(value: _notify_sms, onChanged: (bool val) => setState(() => _notify_sms = val))),
                         ListTile(title: Text('Push уведомления'), trailing: CupertinoSwitch(value: _notify_push, onChanged: (bool val) => setState(() => _notify_push = val))),
                         Divider(),
-                        ListTile(title: Text('Подписываясь на рассылку, вы соглашаетесь с политикой обработки персональных данных.'), trailing: Icon(Icons.navigate_next_outlined)),
-                        new CheckboxListTile(
-                            value: _agreement,
-                            title: new Text('Даю согласие на обработку и хранение моих персональных данных.'),
-                            onChanged: (value) {setState(() => _agreement = value!);}
-                        ),
+                        ListTile(title: Text('Подписываясь на рассылку, вы соглашаетесь с Политикой конфиденциальности.'), trailing: Icon(Icons.navigate_next_outlined),
+                        onTap: () => launchUrlString('https://cleverwear.ru/privacy_policy.html',mode: LaunchMode.inAppBrowserView),),
+                        // CheckboxListTile(
+                        //     value: _agreement,
+                        //     title: new Text('Даю согласие на обработку и хранение моих персональных данных.'),
+                        //     onChanged: (value) {setState(() => _agreement = value!);}
+                        // ),
+                        ListTile(title: Text('Нажимая на кнопку "Зарегистрироваться", вы даете согласие на обработку и хранение своих персональных данных и подтверждаете, что ознакомлены с Политикой конфиденциальности'),),
                         ElevatedButton(
                           child: Text('Зарегистрироваться', style: TextStyle(fontSize: 20)),
                             style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.yellow)),
