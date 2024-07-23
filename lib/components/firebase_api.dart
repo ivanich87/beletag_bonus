@@ -10,8 +10,10 @@ class FirebaseApi{
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> initNotification() async {
-    await _firebaseMessaging.requestPermission();
-    final FCMToken = await _firebaseMessaging.getToken();
+    print('Начало запроса прав _firebaseMessaging');
+    await _firebaseMessaging.requestPermission().timeout(Duration(seconds: 2));
+    print('Получение токена');
+    final FCMToken = await _firebaseMessaging.getToken().timeout(Duration(seconds: 2));
     print('Токен для пуш уведомлений на андройде: ' + FCMToken.toString());
     Globals.setFCM(FCMToken.toString());
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);

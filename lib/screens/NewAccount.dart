@@ -156,12 +156,18 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
                             ),
                           ],
                         ),
+                        Divider(),
+                        ListTile(title: Text('Разрешить Push уведомления с иформацией о бонусах, сроках действия, дополнительных начислениях.'), trailing: CupertinoSwitch(value: _notify_push, onChanged: (bool val) => setState(() => _notify_push = val))),
+                        Divider(),
+                        Text('Подписка на рассылку о скидках и акциях', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
                         ListTile(title: Text('E-mail рассылка'), trailing: CupertinoSwitch(value: _notify_email, onChanged: (bool val) => setState(() => _notify_email = val))),
                         ListTile(title: Text('SMS рассылка'), trailing: CupertinoSwitch(value: _notify_sms, onChanged: (bool val) => setState(() => _notify_sms = val))),
-                        ListTile(title: Text('Push рассылка'), trailing: CupertinoSwitch(value: _notify_push, onChanged: (bool val) => setState(() => _notify_push = val))),
+                        ListTile(title: Text('Push уведомления'), trailing: CupertinoSwitch(value: _notify_push, onChanged: (bool val) => setState(() => _notify_push = val))),
+                        Divider(),
+                        ListTile(title: Text('Подписываясь на рассылку, вы соглашаетесь с политикой обработки персональных данных.'), trailing: Icon(Icons.navigate_next_outlined)),
                         new CheckboxListTile(
                             value: _agreement,
-                            title: new Text('Даю согласие на обработку и хранение моих персональных данных".'),
+                            title: new Text('Даю согласие на обработку и хранение моих персональных данных.'),
                             onChanged: (value) {setState(() => _agreement = value!);}
                         ),
                         ElevatedButton(

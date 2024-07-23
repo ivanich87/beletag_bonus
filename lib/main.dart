@@ -1,4 +1,5 @@
 //import 'dart:html';
+import 'dart:async';
 import 'dart:io' as IO;
 import 'package:beletag/components/firebase_api.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,7 +23,12 @@ void main() async {
   else
     await Firebase.initializeApp();
 
-  await FirebaseApi().initNotification();
+  try {
+    await FirebaseApi().initNotification().timeout(Duration(seconds: 5));
+  } on TimeoutException catch (_) {
+    print('Timed out');
+  }
+
   runApp(const MyApp());
 }
 

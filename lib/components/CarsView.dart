@@ -97,7 +97,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
           children: <Widget>[
             //_buildLogosBlock(),
             Padding(
-              padding: const EdgeInsets.only(top: 7.0),
+              padding: const EdgeInsets.only(top: 5.0),
               child:
               Column(
                 children: [
@@ -110,7 +110,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
                           child:
                           Text.rich(TextSpan(children: [
                             TextSpan(text: 'Ваш баланс: ', style: TextStyle(color: Colors.black, fontSize: 22, fontFamily: 'Montserrat')),
-                            TextSpan(text: bonusTotal, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                            TextSpan(text: bonusTotal, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
                           ],
                           )
                           ),
@@ -137,7 +137,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: (bonusPromo=='0' || bonusPromo==null) ? 140 : 110, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
+              : Container(height: (bonusPromo=='0' || bonusPromo==null) ? 140 : 125, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,14 +242,14 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
       if (bonusPromo != '0') {
       return Container(
         height: 28,
-        padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Row(
           children: [
             InkWell(
               child:
               Text.rich(TextSpan(children: [
                 TextSpan(text: 'Скоро сгорят: ', style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Montserrat')),
-                TextSpan(text: bonusPromo, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+                TextSpan(text: bonusPromo, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
               ],
               )
               ),

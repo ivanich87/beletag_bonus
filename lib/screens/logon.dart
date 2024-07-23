@@ -207,6 +207,7 @@ class __FormContentState extends State<_FormContent> {
                         password = _value_kod;
                         _setUserInfo();
                         print('Аутентификация пройдена успешно');
+                        //accountNew=true;
                         if (accountNew==true)
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
                         else
