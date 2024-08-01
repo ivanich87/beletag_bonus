@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:beletag/screens/NewAccount.dart';
 import 'package:beletag/screens/about.dart';
@@ -168,15 +169,29 @@ class __FormContentState extends State<_FormContent> {
                 border: OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.next,
-              onSubmitted: (_tel_value) {
-                print('Введено значение телефона : ${_tel_value}');
-                _isPasswordVisible = true;
-                login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
-                print(login);
-                httpGetPhoneValidate().then((value) {
-                  setState(() {
+              onChanged: (_tel_value) {
+                if (Platform.isIOS) {
+                  print('Введено значение телефона : ${_tel_value}');
+                  _isPasswordVisible = true;
+                  login = '${_tel_value!.isoCode.name}${_tel_value.nsn}';
+                  print(login);
+                  httpGetPhoneValidate().then((value) {
+                    setState(() {
+                    });
                   });
-                });
+                }
+              },
+              onSubmitted: (_tel_value) {
+                if (Platform.isIOS==false) {
+                  print('Введено значение телефона : ${_tel_value}');
+                  _isPasswordVisible = true;
+                  login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
+                  print(login);
+                  httpGetPhoneValidate().then((value) {
+                    setState(() {
+                    });
+                  });
+                }
               },
             ),
             _gap(),
@@ -201,17 +216,19 @@ class __FormContentState extends State<_FormContent> {
                   prefixIcon: const Icon(Icons.sms_failed_outlined),
                   border: const OutlineInputBorder(),
                   ),
-                    onFieldSubmitted: (_value_kod) {
-                      print('Введено код из смс : ${_value_kod}');
-                      if (_formKey.currentState?.validate() ?? false) {
-                        password = _value_kod;
-                        _setUserInfo();
-                        print('Аутентификация пройдена успешно');
-                        //accountNew=true;
-                        if (accountNew==true)
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
-                        else
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen(login)), (route) => false,);
+                    onChanged: (_value_kod) {
+                      if (_value_kod.length==4) {
+                        print('Введено код из смс : ${_value_kod}');
+                        if (_formKey.currentState?.validate() ?? false) {
+                          password = _value_kod;
+                          _setUserInfo();
+                          print('Аутентификация пройдена успешно');
+                          //accountNew=true;
+                          if (accountNew==true)
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
+                          else
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen(login)), (route) => false,);
+                        }
                       }
                     },
                   ),
