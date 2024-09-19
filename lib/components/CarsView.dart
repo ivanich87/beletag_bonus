@@ -35,7 +35,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
           children: <Widget>[
             if (widget.front==true)
               _buildCreditCard(
-                color: Colors.grey,//Colors.grey,//Colors.black,
+                color: Colors.white30,//Colors.grey,//Colors.black,
                 cardNumber: widget.cardNumber,
                 cardHolder: '${widget.name} ${widget.secondName}',
                 bonusTotal: "${widget.bonusTotal}",
@@ -43,7 +43,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
                 barcode: widget.barcode,
             )
             else
-              _buildCreditBackCard(color: Colors.grey, barcode: widget.barcode)
+              _buildCreditBackCard(color: Colors.white30, barcode: widget.barcode)
             ,
           ],
         ),
@@ -89,7 +89,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Container(
-        height: 235,
+        height: 250,
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +137,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
             Center(
               child: (barcode.length<13)
               ? Container(height: 60, width: 250, child: Text(''))
-              : Container(height: (bonusPromo=='0' || bonusPromo==null) ? 140 : 125, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
+              : Container(height: (bonusPromo=='0' || bonusPromo==null) ? 140 : 135, width: 300, child: SfBarcodeGenerator(value: barcode, symbology: QRCode(), showValue: false, barColor: Colors.black, textStyle: TextStyle(color: Colors.black), )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,7 +162,7 @@ class _CreditCardsPageState extends State<CreditCardsPage> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Container(
-        height: 235,
+        height: 250,
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0, top: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

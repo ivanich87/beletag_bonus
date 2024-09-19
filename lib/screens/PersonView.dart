@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:phone_form_field/phone_form_field.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../models/Lists.dart';
 import 'logon.dart';
@@ -237,6 +238,8 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                     userDataEdit = true;
                   });
                 },)),
+                ListTile(title: Text('Изменяя условия подписки, вы соглашаетесь с Политикой конфиденциальности.', style: TextStyle(fontSize: 12),), trailing: Icon(Icons.navigate_next_outlined),
+                  onTap: () => launchUrlString('https://cleverwear.ru/privacy_policy.html',mode: LaunchMode.inAppBrowserView),),
                 Divider(thickness: 2),
                 SizedBox(height: 30,),
                 Card(

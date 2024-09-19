@@ -65,7 +65,7 @@ class _Logo extends StatelessWidget {
             "Авторизация по номеру телефона",
             textAlign: TextAlign.center,
             style: isSmallScreen
-                ? Theme.of(context).textTheme.headlineMedium
+                ? Theme.of(context).textTheme.headlineSmall
                 : Theme.of(context)
                 .textTheme
                 .headlineMedium

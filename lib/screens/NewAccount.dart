@@ -22,7 +22,7 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
   //var objectList = [];
   List <AboutList> objectList = [];
   bool success = false;
-  String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
+  String logoPath = 'https://img.acewear.ru/CleverWearImg/logo_aspro.png';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String header = '';
   String gender = 'F';

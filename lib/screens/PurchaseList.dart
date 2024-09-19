@@ -59,7 +59,7 @@ class _scrPurchaseListScreenState extends State<scrPurchaseListScreen> {
           centerTitle: true,
           //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
-        body: ListView.builder(
+        body: (objectList.length==0) ? Center(child: Text('Здесь будут отображаться ваши покупки')) : ListView.builder(
           padding: EdgeInsets.all(10),
           physics: BouncingScrollPhysics(),
           reverse: false,

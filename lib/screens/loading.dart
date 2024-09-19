@@ -53,9 +53,17 @@ class _scrLoadingScreenState extends State<scrLoadingScreen> {
         children: [
            //if (connectivityResult != ConnectivityResult.mobile && connectivityResult != ConnectivityResult.wifi)
           if (isOnline!=true)
-             Text('Ошибка 404. Проверьте интернет на устройстве и перезапустите приложение', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), )
+            Column(
+              children: [
+                Text('Ошибка 404. Нет интернета на устройстве или вы не предоставили разрешение на использование интернета. Предоставьте доступ к интернету и перезапустите приложение', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), ),
+                IconButton(onPressed: () {
+                  initState();
+                  }, icon: Icon(Icons.refresh))
+              ],
+            )
+
           else
-             Image.asset('assets/images/beletag.png', width: 250, color: Colors.amber),
+             Image.asset('assets/images/cleverwear.png', width: 250, color: Colors.white),
           //Text('Загрузка данных'),
         ],
       ),

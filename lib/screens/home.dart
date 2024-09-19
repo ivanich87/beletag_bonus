@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:beletag/screens/Docs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -17,6 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../models/Lists.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 //import 'package:intl/intl.dart';
 
 class scrHomeScreen extends StatefulWidget {
@@ -32,7 +34,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   late AnimationController _controller;
   late Animation<double> _animation;
 
-
+  double _currentBrightness = 0;
   bool success = false;
   String message = '';
   String cardNumber = '';
@@ -79,6 +81,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   }
 
   Future httpGetUserData() async {
+    _currentBrightness = await currentBrightness;
+    setBrightness(0.9);
+
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}/', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
@@ -141,6 +146,22 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
     }
   }
 
+  Future<double> get currentBrightness async {
+    try {
+      return await ScreenBrightness().current;
+    } catch (e) {
+      print(e);
+      throw 'Failed to get current brightness';
+    }
+  }
+  Future<void> setBrightness(double brightness) async {
+    try {
+      await ScreenBrightness().setScreenBrightness(brightness);
+    } catch (e) {
+      print(e);
+      throw 'Failed to set brightness';
+    }
+  }
 
   @override
   void initState() {
@@ -168,6 +189,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   @override
   void dispose() {
     _controller.dispose();
+    setBrightness(_currentBrightness);
     super.dispose();
   }
 
@@ -184,7 +206,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   }
 
   Widget build(BuildContext context) {
-    //print('cardNumber: $cardNumber, name: $name, secondName: $secondName, bonusTotal: $bonusTotal, bonusPromo: $bonusPromo, barcode: $barcode');
+    print(barcode);
+    print('Текущая яркость: ${_currentBrightness}');
     return Scaffold(
         appBar: AppBar(
           //backgroundColor: Colors.transparent,
@@ -200,72 +223,143 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
           //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
         backgroundColor: Colors.grey[200],
+
         body: ListView(
-          children: [Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                    Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
-                    InkWell(
-                      child: Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationY(_animation.value * math.pi),
-                          child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: getBarcode(barcode, widget.id), front: _isFront),
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                      Image.network('https://img.acewear.ru/CleverWearImg/banner.jpg'),
+                      InkWell(
+                        child: Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.rotationY(_animation.value * math.pi),
+                            child: CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: getBarcode(barcode, widget.id), front: _isFront),
+                        ),
+                        onTap: () {
+                          _flipCard();
+                        },
                       ),
-                      //CreditCardsPage(cardNumber: cardNumber, name: name, secondName: secondName, bonusTotal: bonusTotal, bonusPromo: bonusPromo, barcode: barcode, front: _isFront),
-                      onTap: () {
-                        _flipCard();
+                      Card(color: Colors.white60,
+                          child: ListTile(
+                              title: Text('История покупок', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                              subtitle: Text('Чеки, возвраты, бонусы', style: TextStyle(color: Colors.black)),
+                              leading: Icon(Icons.currency_ruble_rounded, color: Colors.black),
+                            onTap: () async {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(cardNumber)));
                       },
                     ),
-                    Card(
-                        child: ListTile(
-                            title: Text('История покупок', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                            subtitle: Text('Чеки, возвраты, начисления бонусов'),
-                            leading: Icon(Icons.currency_ruble_rounded),
-                          //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                          onTap: () async {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrPurchaseListScreen(cardNumber)));
-                    },
                   ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Мои данные', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                    subtitle: Text('Персональные данные'),
-                    leading: Icon(Icons.account_circle),
-                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                    onTap: () async {
-                      //_tripEditModalBottomSheet(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('${widget.id}')));
-                    },
+                  Card(color: Colors.white60,
+                    child: ListTile(
+                      title: Text('Акции и новости', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                      subtitle: Text('Посмотреть все акции', style: TextStyle(color: Colors.black)),
+                      leading: Icon(Icons.discount, color: Colors.black),
+                      onTap: () async {
+                        launchUrlString('https://clewear.ru/news/', mode: LaunchMode.inAppBrowserView);
+                      },
+                    ),
                   ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Магазины', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                    subtitle: Text('Адреса магазинов'),
-                    leading: Icon(Icons.maps_home_work_sharp),
-                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                    onTap: () async {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrShopsListScreen()));
-                    },
+                  Card(color: Colors.white60,
+                    child: ListTile(
+                      title: Text('Мои данные', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                      subtitle: Text('Персональные данные', style: TextStyle(color: Colors.black)),
+                      leading: Icon(Icons.account_circle, color: Colors.black),
+                      onTap: () async {
+                        //_tripEditModalBottomSheet(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('${widget.id}')));
+                      },
+                    ),
                   ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('О нас', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),),
-                    subtitle: Text('Информация'),
-                    leading: Icon(Icons.info_outlined),
-                    //trailing: Text('100', style: TextStyle(fontSize: 18, color: Colors.green),),
-                    onTap: () async {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAboutScreen()));
-                    },
+                  Card(color: Colors.white60,
+                    child: ListTile(
+                      title: Text('Магазины', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                      subtitle: Text('Адреса магазинов', style: TextStyle(color: Colors.black)),
+                      leading: Icon(Icons.maps_home_work_sharp, color: Colors.black),
+                      onTap: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrShopsListScreen()));
+                      },
+                    ),
                   ),
-                )
+                  Card(color: Colors.white60,
+                    child: ListTile(
+                      title: Text('Покупателю', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                      subtitle: Text('Юридические документы', style: TextStyle(color: Colors.black)),
+                      leading: Icon(Icons.list_alt, color: Colors.black),
+                      onTap: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrDocsScreen()));
+                      },
+                    ),
+                  ),
+                  Card(color: Colors.white60,
+                    child: ListTile(
+                      title: Text('О нас', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
+                      subtitle: Text('Информация', style: TextStyle(color: Colors.black)),
+                      leading: Icon(Icons.info_outlined, color: Colors.black),
+                      onTap: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrAboutScreen()));
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 30,),
+                  Divider(),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              //color: Colors.deepPurpleAccent,
+                            ),
+                            child:
+                              Column(
+                                children: [
+                                  IconButton(onPressed: () => _makingPhoneCall('88006001185', 1), icon: Icon(Icons.phone_enabled, color: Colors.black),),
+                                  Text('8 800 600 11 85', style: TextStyle(color: Colors.black)),
+                                  Text('8:00 - 17:00 мск', style: TextStyle(color: Colors.black)),
+                                  Text('сб, вск - выходной', style: TextStyle(color: Colors.black)),
+                                ],
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(
+                          width: 20,
+                          thickness: 1,
+                          indent: 20,
+                          endIndent: 0,
+                          color: Colors.black,
+                        ),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              //color: Colors.deepOrangeAccent,
+                            ),
+                            child:
+                              Column(
+                                children: [
+                                  IconButton(onPressed: () => _makingPhoneCall('info@cleverwear.ru', 3), icon: Icon(Icons.email, color: Colors.black,),),
+                                  Text('info@cleverwear.ru', style: TextStyle(color: Colors.black)),
+                                ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(onPressed: () => _makingPhoneCall('https://vk.com/clewear', 4), icon: Image.asset('assets/images/VK.png', height: 48,)),
+                      IconButton(onPressed: () => _makingPhoneCall('https://t.me/cleverwear', 4), icon: Image.asset('assets/images/Telegram.png', height: 48,))
+                    ],
+                  )
               ],
             ),
           ),
-    ]
+          ]
         ),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {},
@@ -336,4 +430,24 @@ class _ProfileIcon extends StatelessWidget {
           ),
         ]);
   }
+}
+
+_makingPhoneCall(phone, tip) async {
+  var url = Uri.parse("tel:$phone");
+  if (tip==1) {
+
+  }
+  if (tip==2) {
+    url = Uri.parse("sms:$phone");
+  };
+  if (tip==3) {
+    url = Uri.parse("mailto:$phone?subject=News&body=New%20plugin");
+  };
+  if (tip==4) {
+    launchUrlString(phone);
+  }
+  else
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    };
 }

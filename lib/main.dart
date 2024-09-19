@@ -199,7 +199,7 @@ class _MyAppState extends State<MyApp> {
         Locale('ru', ''), // arabic, no country code
       ],
 
-      theme: ThemeData.light().copyWith(cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black, textTheme: Typography().black.apply(fontFamily: 'Montserrat')),
+      theme: ThemeData.light().copyWith( cardTheme: CardTheme(color: Colors.grey[200]), dividerColor: Colors.black, textTheme: Typography().black.apply(fontFamily: 'Montserrat')),
       darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.grey[500], dividerColor: Colors.white, textTheme: Typography().white.apply(fontFamily: 'Montserrat')), //grey[850]
       themeMode: ThemeMode.values[themeIndex],
       title: 'Бельетаж',
