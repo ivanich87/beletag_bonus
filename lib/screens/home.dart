@@ -285,7 +285,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                   Card(color: Colors.white60,
                     child: ListTile(
                       title: Text('Покупателю', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),),
-                      subtitle: Text('Юридические документы', style: TextStyle(color: Colors.black)),
+                      subtitle: Text('Правила и информация', style: TextStyle(color: Colors.black)),
                       leading: Icon(Icons.list_alt, color: Colors.black),
                       onTap: () async {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => scrDocsScreen()));

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84640627710",
+    "project_id": "cleverwear-ec068",
+    "storage_bucket": "cleverwear-ec068.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84640627710:android:b1934e3f8ed9c6959e1eaf",
+        "android_client_info": {
+          "package_name": "com.clever.android.bonus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB5uYf1fmyAJF4yLBRL3UJ4AA6-O8Gc_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
