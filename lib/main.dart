@@ -83,6 +83,8 @@ class _MyAppState extends State<MyApp> {
   bool _requireConsent = false;
   bool _enableConsentButton = false;
   String _debugLabelString = "";
+  //final connectivityResult = (Connectivity().checkConnectivity());
+  bool isOnline = true;
 
   bool _load = false;
   String _login = '';
@@ -146,6 +148,7 @@ class _MyAppState extends State<MyApp> {
 
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      isOnline = true;
       try {
         var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
         if (response.statusCode == 200) {
@@ -165,6 +168,7 @@ class _MyAppState extends State<MyApp> {
     else {
       print('Нет инета');
       _load = false;
+      isOnline = false;
       //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Нет подключения к интернету"), backgroundColor: Colors.red,));
     }
   }
@@ -178,7 +182,7 @@ class _MyAppState extends State<MyApp> {
       });
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
     //initPlatformState();
   }
 
@@ -204,7 +208,43 @@ class _MyAppState extends State<MyApp> {
       themeMode: ThemeMode.values[themeIndex],
       title: 'Бельетаж',
 
-      home: (logIn == true) ? scrHomeScreen(_login) : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
+      home: (logIn == true) ? scrHomeScreen(_login) : (_load == true) ? scrLogonScreen() : _scrLoadingScreen(),
     );
   }
+
+  _scrLoadingScreen() {
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          //if (connectivityResult != ConnectivityResult.mobile && connectivityResult != ConnectivityResult.wifi)
+          if (isOnline!=true)
+            Column(crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Ошибка 404.', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), ),
+                Text('Нет интернета на устройстве или вы не предоставили разрешение на использование интернета. Предоставьте доступ к интернету и перезапустите приложение', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), ),
+                SizedBox(height: 20,),
+                Container(color: Colors.white30,
+                  child: IconButton(color: Colors.red, onPressed: () {
+                    initState();
+                    }, icon: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.refresh, size: 36, color: Colors.white, ),
+                      Text(' Обновить', style: TextStyle(color: Colors.white, fontSize: 24),),
+
+                  ],)),
+                )
+              ],
+            )
+
+          else
+            Image.asset('assets/images/cleverwear.png', width: 250, color: Colors.white),
+          //Text('Загрузка данных'),
+        ],
+      ),
+    );
+  }
+
 }
+

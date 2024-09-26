@@ -57,7 +57,8 @@ class _scrLoadingScreenState extends State<scrLoadingScreen> {
               children: [
                 Text('Ошибка 404. Нет интернета на устройстве или вы не предоставили разрешение на использование интернета. Предоставьте доступ к интернету и перезапустите приложение', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), ),
                 IconButton(onPressed: () {
-                  initState();
+                  //initState();
+                  Navigator.pop(context);
                   }, icon: Icon(Icons.refresh))
               ],
             )
