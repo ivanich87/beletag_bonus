@@ -170,10 +170,10 @@ class __FormContentState extends State<_FormContent> {
               ),
               textInputAction: TextInputAction.next,
               onChanged: (_tel_value) {
-                if (Platform.isIOS) {
+                if (Platform.isIOS && _tel_value!.isValid()) {
                   print('Введено значение телефона : ${_tel_value}');
                   _isPasswordVisible = true;
-                  login = '${_tel_value!.isoCode.name}${_tel_value.nsn}';
+                  login = '${_tel_value!.countryCode}${_tel_value.nsn}';
                   print(login);
                   httpGetPhoneValidate().then((value) {
                     setState(() {

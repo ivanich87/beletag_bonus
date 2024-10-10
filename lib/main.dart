@@ -5,7 +5,6 @@ import 'package:beletag/components/firebase_api.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:beletag/models/Lists.dart';
-import 'package:beletag/screens/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:beletag/screens/home.dart';
 import 'package:beletag/screens/logon.dart';
@@ -14,7 +13,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:beletag/components/firebase_api.dart';
+//import 'package:beletag/components/firebase_api.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

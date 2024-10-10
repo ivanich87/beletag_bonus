@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDCRettbR0Cb0A4DFj6qKU_e4u4_FMgh_g</string>
+	<key>GCM_SENDER_ID</key>
+	<string>84640627710</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.clever.android.bonus</string>
+	<key>PROJECT_ID</key>
+	<string>cleverwear-ec068</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cleverwear-ec068.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:84640627710:ios:920f0e10f0fd2fee9e1eaf</string>
+</dict>
+</plist>
