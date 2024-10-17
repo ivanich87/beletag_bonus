@@ -21,6 +21,12 @@ class FirebaseApi{
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
     //--//подключаем локальные уведомления flutter_local_notifications
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, // Required to display a heads up notification
+      badge: true,
+      sound: true,
+    );
+    
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel', // id
       'High Importance Notifications', // title

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:beletag/screens/Docs.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -184,6 +185,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
       ..addListener(() {
         setState(() {});
       });
+    setupInteractedMessage();
   }
 
   @override
@@ -257,7 +259,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                       subtitle: Text('Посмотреть все акции', style: TextStyle(color: Colors.black)),
                       leading: Icon(Icons.discount, color: Colors.black),
                       onTap: () async {
-                        launchUrlString('https://clewear.ru/news/', mode: LaunchMode.inAppBrowserView);
+                        launchUrlString('https://beletag.com/sale/', mode: LaunchMode.inAppBrowserView);
                       },
                     ),
                   ),
@@ -353,6 +355,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                   Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(onPressed: () => _makingPhoneCall('https://vk.com/clewear', 4), icon: Image.asset('assets/images/VK.png', height: 48,)),
+                      IconButton(onPressed: () => _makingPhoneCall('https://beletag.com/', 4), icon: Image.asset('assets/images/Site.png', height: 48,)),
                       IconButton(onPressed: () => _makingPhoneCall('https://t.me/cleverwear', 4), icon: Image.asset('assets/images/Telegram.png', height: 48,))
                     ],
                   )
@@ -369,6 +372,37 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
         );
   }
 
+  // It is assumed that all messages contain a data field with the key 'type'
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    print('Шаг1');
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    print('Шаг2');
+    if (initialMessage != null) {
+      print('Шаг3');
+      _handleMessage(initialMessage);
+    }
+    print('Шаг4');
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    print('Заходим и проверяем было ли какое то действие зашитов в сообщение');
+    String _urlMessage = message.data['url'] ?? '';
+    if (_urlMessage != '') {
+      launchUrlString(_urlMessage, mode: LaunchMode.inAppBrowserView);
+      // Navigator.pushNamed(context, '/chat',
+      //   arguments: ChatArguments(message),
+      // );
+    }
+  }
 }
 
 getBarcode(String ean, String phone) {

@@ -13,19 +13,26 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_api_availability/google_api_availability.dart';
 //import 'package:beletag/components/firebase_api.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (IO.Platform.isAndroid)
-    await Firebase.initializeApp(options: FirebaseOptions(apiKey: 'AIzaSyAB5uYf1fmyAJF4yLBRL3UJ4AA6-O8Gc_M', appId: '1:84640627710:android:b1934e3f8ed9c6959e1eaf', messagingSenderId: '84640627710', projectId: 'cleverwear-ec068'));
+  GooglePlayServicesAvailability availability = await GoogleApiAvailability.instance.checkGooglePlayServicesAvailability();
+  if (IO.Platform.isAndroid) {
+    //print('availability = ${availability.value}');
+    if (availability.value==0)
+      await Firebase.initializeApp(options: FirebaseOptions(apiKey: 'AIzaSyAB5uYf1fmyAJF4yLBRL3UJ4AA6-O8Gc_M', appId: '1:84640627710:android:b1934e3f8ed9c6959e1eaf', messagingSenderId: '84640627710', projectId: 'cleverwear-ec068'));
+  }
   else
     await Firebase.initializeApp();
 
-  try {
-    await FirebaseApi().initNotification().timeout(Duration(seconds: 5));
-  } on TimeoutException catch (_) {
-    print('Timed out');
+  if (IO.Platform.isAndroid && availability.value==0) {
+    try {
+      await FirebaseApi().initNotification().timeout(Duration(seconds: 5));
+    } on TimeoutException catch (_) {
+      print('Timed out');
+    }
   }
 
   runApp(const MyApp());
