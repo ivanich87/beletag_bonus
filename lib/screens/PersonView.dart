@@ -12,7 +12,7 @@ import 'logon.dart';
 
 
 class scrPersonViewScreen extends StatefulWidget {
-   final String id;
+  String id;
   scrPersonViewScreen(this.id);
 
   @override
@@ -20,6 +20,11 @@ class scrPersonViewScreen extends StatefulWidget {
 }
 
 class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
+  String _phoneNewNumber='';
+  String _smskod = '-1';
+  bool _isUserNew = true;
+  bool accountNew = false;
+
   bool userDataEdit = false;
   bool success = false;
   var resp;
@@ -38,13 +43,37 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
   bool notify_systempush = false;
   int level = 0;
   bool blocked = false;
+  bool _isPasswordVisible = false;
+
+  Future<bool> httpGetUserNew(newPhone) async {
+    bool _res = false;
+    var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${newPhone}/', host: 's4.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      if (response.statusCode == 200)
+        _res = false;
+      else
+        _res = true;
+
+
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
+    return _res;
+  }
 
   Future httpGetObject() async {
+    print(widget.id);
     var _url=Uri(path: '/c/beletag_bonus/hs/v1/user/${widget.id}', host: 's4.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': Globals.anAuthorization
     };
+    print(_url.path);
     try {
       print('Запуск');
       var response = await http.get(_url, headers: _headers);
@@ -57,6 +86,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           last_name = resp['last_name'];
           second_name = resp['second_name'];
           phone = resp['phone'];
+          _phoneNewNumber = phone;
           email = resp['email'];
           confirmed_email = resp['confirmed_email'];
           gender = resp['gender'];
@@ -161,6 +191,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
         if (userDataEdit==true) {
           print('Выход с сохранением');
           httpPutUserChange();
+          widget.id=_phoneNewNumber;
         }
         return;
       },
@@ -175,15 +206,15 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
           child: ListView(
               children: [
                 _CustomHeader(title: 'ФИО'),
-                ListTile(leading: Icon(Icons.manage_accounts_rounded), title: _CustomText(title: '$last_name $name $second_name'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(1)),)),
+                ListTile(leading: Icon(Icons.manage_accounts_rounded), title: _CustomText(title: '$last_name $name $second_name'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, 1),)),
                 Divider(thickness: 2, ),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Телефон'),
-                ListTile(enabled: false, leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: () {},)), //=>_tripEditModalBottomSheet(context, _tripEditWidgets(2))
+                ListTile(enabled: true, leading: Icon(Icons.phone, color: Colors.green), title: _CustomText(title: '$phone'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, 2),)), //=>_tripEditModalBottomSheet(context, _tripEditWidgets(2))
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'E-mail'),
-                ListTile(leading: (confirmed_email ? Icon(Icons.mark_email_read, color: Colors.green) : Icon(Icons.mark_email_unread_rounded, color: Colors.red)), title: _CustomText(title: '$email'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(3)),)),
+                ListTile(leading: (confirmed_email ? Icon(Icons.mark_email_read, color: Colors.green) : Icon(Icons.mark_email_unread_rounded, color: Colors.red)), title: _CustomText(title: '$email'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, 3),)),
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'День рождения'),
@@ -209,7 +240,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Пол'),
-                ListTile(leading: (gender=='F') ? Icon(Icons.female, color: Colors.pinkAccent,) : Icon(Icons.male, color: Colors.lightBlue), title: _CustomText(title: (gender=='F') ? 'Женский' : 'Мужской'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, _tripEditWidgets(5)),)),
+                ListTile(leading: (gender=='F') ? Icon(Icons.female, color: Colors.pinkAccent,) : Icon(Icons.male, color: Colors.lightBlue), title: _CustomText(title: (gender=='F') ? 'Женский' : 'Мужской'), trailing: IconButton(icon: Icon(Icons.edit), onPressed: ()=>_tripEditModalBottomSheet(context, 5),)),
                 Divider(thickness: 2),
                 //SizedBox(height: 10,),
                 _CustomHeader(title: 'Разрешить рассылку'),
@@ -264,35 +295,39 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     );
   }
 
-  void _tripEditModalBottomSheet(BuildContext context, Widget type) {
+  void _tripEditModalBottomSheet(BuildContext context, int type) {
     showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
-      return Container(
-        height: 600,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: type,
-        ),
-      );
-
-    });
+      return StatefulBuilder(builder: (BuildContext context, StateSetter mystate)
+      {
+        return Container(
+          height: 600,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _tripEditWidgets(type, mystate), //type,
+          ),
+        );
+      });
+    }
+    );
   }
 
-  Widget _tripEditWidgets(int i) {
-    GlobalKey _formKey= new GlobalKey<FormState>();
+  Widget _tripEditWidgets(int i, mystate) {
+    //GlobalKey _formKey= new GlobalKey<FormState>();
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     TextEditingController _nameController = TextEditingController(text: name);
     TextEditingController _last_nameController = TextEditingController(text: last_name);
     TextEditingController _second_nameController = TextEditingController(text: second_name);
 
     TextEditingController _phoneController = TextEditingController(text: phone);
-    //PhoneController _phoneController = PhoneController(phone as PhoneNumber);
+    //PhoneController _phoneController2 = PhoneController(phone as PhoneNumber);
     
 
     TextEditingController _emailController = TextEditingController(text: email);
 
     final _style = ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(Colors.grey),
-      shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-      minimumSize: MaterialStateProperty.all(Size(250, 40))
+      backgroundColor: WidgetStateProperty.all(Colors.grey),
+      shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+      minimumSize: WidgetStateProperty.all(Size(250, 40))
     );
 
     void _SaveDataFIO() {
@@ -315,11 +350,11 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
 
     void _SaveDataPhone() {
       setState(() {
-        // if (_phoneController.text.length<2)
-        //   print('Почта не заполнена');
-        //
-        // phone = _phoneController.text;
-        // userDataEdit = true;
+        if (_phoneController.text.length<2)
+          print('Телефон не заполнена');
+
+        phone = _phoneController.text;
+        userDataEdit = true;
       });
       Navigator.pop(context);
     }
@@ -373,19 +408,103 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
       );
     };
     if (i==2) {
-      return Column(
-        children: [
-          TextFormField(
-            controller: _phoneController,
-            //defaultCountry: IsoCode.RU,
-            //validator: PhoneValidator.validMobile(),
-            autofocus: true,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)), labelText: 'Телефон'),
-          ),
-          SizedBox(height: 20),
-          Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataPhone, child: Text('!Сохранить'), style: _style, )),
-        ],
+      return Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            PhoneFormField(
+              key: Key('phone-field'),
+              //controller: _phoneController2,
+              initialValue: PhoneNumber(isoCode: IsoCode.RU, nsn: _phoneNewNumber.substring(1, 11)),
+              defaultCountry: IsoCode.RU,
+              validator: PhoneValidator.validMobile(),
+              enabled: !_isPasswordVisible,
+              autofocus: !_isPasswordVisible,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Телефон',
+                hintText: 'Введите ваш номер телефона',
+                //prefixIcon: Icon(Icons.phone),
+                icon: Icon(Icons.phone),
+                border: OutlineInputBorder(),
+              ),
+              textInputAction: TextInputAction.next,
+              onChanged: (_tel_value) async {
+                if (_tel_value!.isValid()) {
+                  print('Введено значение телефона : ${_tel_value}');
+                  //проверяем, зарегистрирован ли такой номер в базе
+                  _phoneNewNumber = '${_tel_value!.countryCode}${_tel_value.nsn}';
+                  _isUserNew = await httpGetUserNew(_phoneNewNumber);
+                  if (_isUserNew) {
+                    _isPasswordVisible = true;
+                    ValidatePhone _res = await httpGetPhoneValidateGlobal(_phoneNewNumber);
+                    print(_res);
+                    _smskod = _res.code;
+                    accountNew = _res.accountNew;
+                    if (_res.result==false)
+                      print('Была ошибка при отправке кода');
+                  }
+                  else {
+                    _isPasswordVisible = false;
+                  }
+                  mystate(() {
+                  });
+                }
+              },
+            ),
+            SizedBox(height: 12,),
+            if (_isUserNew==false)
+              Text('Номер $_phoneNewNumber уже зарегистрирован в базе.', style: TextStyle(color: Colors.red),),
+            if (_isPasswordVisible == true)
+              TextFormField(
+                autofocus: _isPasswordVisible,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  if (value != _smskod) {
+                    return 'Не совпадает код из смс';
+                  }
+
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Код',
+                  hintText: 'Введите код из смс',
+                  prefixIcon: const Icon(Icons.sms_failed_outlined),
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_value_kod) {
+                  if (_value_kod.length==4) {
+                    print('Введено код из смс : ${_value_kod}');
+                    if (_formKey.currentState?.validate() ?? false) {
+                      //password = _value_kod;
+                      //_setUserInfo();
+                      print('Аутентификация пройдена успешно');
+                      //accountNew=true;
+                      if (accountNew==true) {
+                        print('Запускаем процедуру смены номера на сервере');
+                        _phoneController.text = _phoneNewNumber;
+                        //_phoneController2.value=PhoneNumber(isoCode: IsoCode.RU, nsn: _phoneNewNumber);
+                        setUserInfo(_phoneNewNumber, _value_kod);
+                        _SaveDataPhone();
+                      }
+                      else {
+                          final snackBar = SnackBar(
+                            content: Text('Номер телефона уже есть в базе. Вы можете выйти из учетной записи и войти под этим номером'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          //print('Ошибка, номер, который ввел пользователь - занят (уже есть карта с таким номером)');
+                        }
+                    }
+                  }
+                },
+              ),
+            //SizedBox(height: 20),
+            //Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataPhone, child: Text('Сохранить'), style: _style, )),
+          ],
+        ),
       );
     };
     if (i==3) {

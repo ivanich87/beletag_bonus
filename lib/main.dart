@@ -20,14 +20,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GooglePlayServicesAvailability availability = await GoogleApiAvailability.instance.checkGooglePlayServicesAvailability();
   if (IO.Platform.isAndroid) {
-    //print('availability = ${availability.value}');
+    print('availability = ${availability.value}');
+    print('IO.Platform = ${IO.Platform}');
     if (availability.value==0)
       await Firebase.initializeApp(options: FirebaseOptions(apiKey: 'AIzaSyAB5uYf1fmyAJF4yLBRL3UJ4AA6-O8Gc_M', appId: '1:84640627710:android:b1934e3f8ed9c6959e1eaf', messagingSenderId: '84640627710', projectId: 'cleverwear-ec068'));
   }
   else
     await Firebase.initializeApp();
 
-  if (IO.Platform.isAndroid && availability.value==0) {
+  if ((IO.Platform.isAndroid && availability.value==0) || IO.Platform.isIOS) {
     try {
       await FirebaseApi().initNotification().timeout(Duration(seconds: 5));
     } on TimeoutException catch (_) {

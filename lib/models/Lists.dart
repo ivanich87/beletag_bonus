@@ -1,3 +1,28 @@
+class ValidatePhone {
+  String code;
+  bool accountNew;
+  bool result;
+
+  //Event({required this.name, required this.location, required this.dt});
+
+  ValidatePhone({
+    required this.code,
+    required this.accountNew,
+    required this.result,
+  });
+
+  ValidatePhone.fromJson(Map<String, dynamic> json)
+      : code = json['code'],
+        accountNew = json['new'],
+        result = json['result'];
+
+  Map<String, dynamic> toJson() => {
+    'new': accountNew,
+    'code': code,
+    'result': result,
+  };
+}
+
 class UserInfo {
   String login;
   String password;

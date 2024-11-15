@@ -85,7 +85,6 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
-  static const userInfoKey = 'userInfoKey';
   String login = '';
   String password = '';
   bool accountNew = false;
@@ -95,20 +94,6 @@ class __FormContentState extends State<_FormContent> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future _setUserInfo() async {
-    int themeIndex = Globals.anThemeIndex;
-
-    //сохраняем в глобальные переменные логин и пароль
-    Globals.setLogin(login);
-    Globals.setPasswodr(password);
-
-    //сохраняем в локальную БД параметры
-    var prefs = await SharedPreferences.getInstance();
-    final _userInfo = UserInfo(login: login, password: password, themeIndex: themeIndex);
-    prefs.setString(userInfoKey, json.encode(_userInfo));
-
-    print('Сохранили в ключ $userInfoKey строку: ${json.encode(_userInfo)}');
-  }
 
   Future httpGetPhoneValidate() async {
     print('Запустилась процедура отправки смс на $login');
@@ -169,28 +154,21 @@ class __FormContentState extends State<_FormContent> {
                 border: OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.next,
-              onChanged: (_tel_value) {
-                if (Platform.isIOS && _tel_value!.isValid()) {
+              onChanged: (_tel_value) async {
+                if (_tel_value!.isValid()) {
                   print('Введено значение телефона : ${_tel_value}');
                   _isPasswordVisible = true;
                   login = '${_tel_value!.countryCode}${_tel_value.nsn}';
                   print(login);
-                  httpGetPhoneValidate().then((value) {
+                  ValidatePhone _res = await httpGetPhoneValidateGlobal(login);
+                  if (_res !=null) {
+                    _smskod = _res.code;
+                    accountNew = _res.accountNew;
+                    if (_res.result==false)
+                      print('Была ошибка при отправке кода');
                     setState(() {
                     });
-                  });
-                }
-              },
-              onSubmitted: (_tel_value) {
-                if (Platform.isIOS==false) {
-                  print('Введено значение телефона : ${_tel_value}');
-                  _isPasswordVisible = true;
-                  login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
-                  print(login);
-                  httpGetPhoneValidate().then((value) {
-                    setState(() {
-                    });
-                  });
+                  }
                 }
               },
             ),
@@ -221,7 +199,7 @@ class __FormContentState extends State<_FormContent> {
                         print('Введено код из смс : ${_value_kod}');
                         if (_formKey.currentState?.validate() ?? false) {
                           password = _value_kod;
-                          _setUserInfo();
+                          setUserInfo(login, password);
                           print('Аутентификация пройдена успешно');
                           //accountNew=true;
                           if (accountNew==true)
@@ -240,4 +218,56 @@ class __FormContentState extends State<_FormContent> {
   }
 
   Widget _gap() => const SizedBox(height: 16);
+}
+
+Future<ValidatePhone> httpGetPhoneValidateGlobal(String login) async {
+  print('Запустилась процедура отправки смс на $login');
+  var resp;
+  ValidatePhone res = ValidatePhone(code: '', accountNew: false, result: false);
+  bool success = false;
+  String message = '';
+  var _url=Uri(path: '/c/beletag_bonus/hs/v1/phonevalidate/${login}/', host: 's4.rntx.ru', scheme: 'https');
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    if (response.statusCode == 200) {
+      var notesJson = json.decode(response.body);
+      success = notesJson['success'] ?? false;
+      message = notesJson['message'] ?? '';
+      if (success==true) {
+        resp = notesJson['response'] ?? '';
+        res = ValidatePhone.fromJson(resp);
+        // result = resp['result'];
+        // _smskod = resp['code'];
+        // accountNew = resp['new'];
+        if (res.result == false)
+          print('Ошибка отправки смс: $message');
+      }
+      else
+        print('Ошибка отправки смс $message');
+    }
+  } catch (error) {
+    print("Ошибка при получении смс кода: $error");
+  }
+  return res;
+}
+
+Future setUserInfo(String name, String pas) async {
+  const userInfoKey = 'userInfoKey';
+
+  int themeIndex = Globals.anThemeIndex;
+
+  //сохраняем в глобальные переменные логин и пароль
+  Globals.setLogin(name);
+  Globals.setPasswodr(pas);
+
+  //сохраняем в локальную БД параметры
+  var prefs = await SharedPreferences.getInstance();
+  final _userInfo = UserInfo(login: name, password: pas, themeIndex: themeIndex);
+  prefs.setString(userInfoKey, json.encode(_userInfo));
+
+  print('Сохранили в ключ $userInfoKey строку: ${json.encode(_userInfo)}');
 }

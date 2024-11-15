@@ -23,7 +23,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 //import 'package:intl/intl.dart';
 
 class scrHomeScreen extends StatefulWidget {
-  final String id;
+  String id;
   scrHomeScreen(this.id);
 
   @override
@@ -192,6 +192,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   void dispose() {
     _controller.dispose();
     setBrightness(_currentBrightness);
+
+
+
     super.dispose();
   }
 
@@ -270,7 +273,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                       leading: Icon(Icons.account_circle, color: Colors.black),
                       onTap: () async {
                         //_tripEditModalBottomSheet(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('${widget.id}')));
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrPersonViewScreen('${widget.id}')));
+                        print('Проверяем поменялся ли widget.id = ${widget.id}');
+                        widget.id = Globals.anLogin;
+                        print('Проверяем поменялся ли widget.id = ${widget.id}');
                       },
                     ),
                   ),
@@ -401,6 +407,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
       // Navigator.pushNamed(context, '/chat',
       //   arguments: ChatArguments(message),
       // );
+      _urlMessage='';
+      message.data['url']='';
     }
   }
 }
@@ -439,7 +447,7 @@ class _ProfileIcon extends StatelessWidget {
             showAboutDialog(
               context: context,
               applicationVersion: 'Роганов Владимир',
-              applicationIcon: Image.asset('assets/images/logo.png', width: 60),
+              applicationIcon: Image.asset('assets/images/logo.png', width: 60, color: (Globals.anIsDarkTheme) ? Colors.white : Colors.black,),
               //applicationLegalese: 'Разработчик: Роганов Владимир',
               children: <Widget>[
                 Text('Приложение для бонусной системы магазинов Бельетаж, Beleta, Clever. '),
