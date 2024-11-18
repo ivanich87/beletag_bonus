@@ -363,7 +363,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     void _SaveDataEmail() {
       if (RegExp(
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-          .hasMatch(_emailController.text)) {
+          .hasMatch(_emailController.text) || _emailController.text=='') {
             setState(() {
             email = _emailController.text;
             userDataEdit = true;
