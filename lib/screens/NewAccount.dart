@@ -140,7 +140,7 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
                           controller: _emailController,
                           decoration: InputDecoration(label: Text('E-mail'), border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)), prefixIcon: Icon(Icons.person)),
                             validator: (value) {
-                              if (value != null && value.isEmpty) {
+                              if (value != null && value.isEmpty==false) {
                                 if (RegExp(
                                     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
                                     .hasMatch(value)) {
