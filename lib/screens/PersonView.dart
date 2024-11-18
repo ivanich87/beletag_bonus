@@ -24,6 +24,7 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
   String _smskod = '-1';
   bool _isUserNew = true;
   bool accountNew = false;
+  bool _isEmailValid = true;
 
   bool userDataEdit = false;
   bool success = false;
@@ -360,14 +361,23 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
     }
 
     void _SaveDataEmail() {
-      setState(() {
-        if (_emailController.text.length<2)
-          print('Почта не заполнена');
-
-        email = _emailController.text;
-        userDataEdit = true;
-      });
-      Navigator.pop(context);
+      if (RegExp(
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+          .hasMatch(_emailController.text)) {
+            setState(() {
+            email = _emailController.text;
+            userDataEdit = true;
+            _isEmailValid = true;
+            Navigator.pop(context);
+          });
+      }
+      else {
+        mystate((){
+          email = _emailController.text;
+          _isEmailValid = false;
+        });
+        print('Есть спец символы');
+      }
     }
 
     void _SaveDataBirday() {
@@ -511,9 +521,13 @@ class _scrPersonViewScreenState extends State<scrPersonViewScreen> {
       return Column(
         children: [
           TextFormField(
+            key: Key('email-field'),
             controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)), labelText: 'E-Mail'),
           ),
+          if (_isEmailValid==false)
+            Text('В E-mail указан не корректно, есть недопустимы символы', style: TextStyle(color: Colors.red),),
           SizedBox(height: 20),
           Container(alignment: Alignment.center,child: ElevatedButton(onPressed: _SaveDataEmail, child: Text('Сохранить'), style: _style, )),
         ],

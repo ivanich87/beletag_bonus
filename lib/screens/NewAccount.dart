@@ -136,7 +136,24 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
                           }
                         },
                         ),
-                        TextFormField(controller: _emailController, decoration: InputDecoration(label: Text('E-mail'), border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)), prefixIcon: Icon(Icons.person)),),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(label: Text('E-mail'), border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)), prefixIcon: Icon(Icons.person)),
+                            validator: (value) {
+                              if (value != null && value.isEmpty) {
+                                if (RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                    .hasMatch(value)) {
+                                  print('Почта заполнена корректно');
+                                } else {
+                                  print('Почта заполнена НЕ корректно');
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не верный формат почты. Возможно есть спец символы'), backgroundColor: Colors.red,));
+                                  return 'Не верный формат почты. Возможно есть спец символы';
+                                }
+                              };
+                              return null;
+                            }
+                            ),
                         SizedBox(height: 8,),
                         //Text('Пол'),
                         Row(
